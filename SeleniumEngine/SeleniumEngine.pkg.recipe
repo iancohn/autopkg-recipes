@@ -42,7 +42,7 @@
           <key>Arguments</key>
           <dict>
               <key>url</key>
-              <string>https://github.com/iancohn/SeleniumEngine/-/raw/main/versions.txt</string>
+              <string>https://raw.githubusercontent.com/iancohn/SeleniumEngine/main/versions.txt</string>
               <key>re_pattern</key>
               <string><![CDATA[__version__\=\s?(?P<engine_version>[0-9\.]+)\s?]]></string>
           </dict>
