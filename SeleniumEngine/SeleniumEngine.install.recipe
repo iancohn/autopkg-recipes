@@ -7,10 +7,7 @@
     <key>Identifier</key>
     <string>com.github.iancohn.install.SeleniumEngine</string>
     <key>Input</key>
-    <dict>
-        <key>NAME</key>
-        <string>SeleniumEngine</string>
-    </dict>
+    <dict/>
     <key>MinimumVersion</key>
     <string>2.0.0</string>
     <key>ParentRecipe</key>
