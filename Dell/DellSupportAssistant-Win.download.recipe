@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <key>Description</key>
+    <string>This recipe downloads Dell Display Manager</string>
+    <key>Identifier</key>
+    <string>com.github.iancohn.download.DellSupportAssist-Win</string>
+    <key>Input</key>
+    </dict>
+    <key>MinimumVersion</key>
+    <string>2.0.0</string>
+    <key>Process</key>
+    <array>
+        <dict>
+            <key>Processor</key>
+            <string>URLDownloader</string>
+            <key>Arguments</key>
+            <dict>
+                <key>url</key>
+                <string>%download_url%</string>
+                 <key>request_headers</key>
+                    <dict>
+                            <key>user-agent</key>
+                            <string>Mozilla/5.0 (Windows NT 6.3; Win64, x64; Trident/7.0; rv:11.0) like Gecko</string>
+                    </dict>
+            </dict>
+        </dict>
+        <dict>
+            <key>Processor</key>
+            <string>URLTextSearcher</string>
+            <key>Arguments</key>
+            <dict>
+                <key>url</key>
+                <string>https://www.dell.com/support/home/en-us/product-support/product/dell-supportassist-pcs-tablets/docs</string>
+                <key>re_pattern</key>
+                <string>supportassist for home pcs version (?P&lt;version&gt;[\d\.]*?)\s</string>
+                <key>re_flags</key>
+                <string>IGNORECASE</string>
+            </dict>
+        </dict>
+        <dict>
+            <key>Processor</key>
+            <string>StopProcessingIf</string>
+            <key>Arguments</key>
+            <dict>
+                <key>predicate</key>
+                <string>VERSION == "" OR VERSION == "None" </string>
+            </dict>
+        </dict>
+        <dict>
+            <key>Processor</key>
+            <string>EndOfCheckPhase</string>
+        </dict>
+    </array>
+</dict>
+</plist>
