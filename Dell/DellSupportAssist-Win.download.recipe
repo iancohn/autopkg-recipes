@@ -6,11 +6,10 @@
     <string>This recipe downloads Dell SupportAssist</string>
     <key>Identifier</key>
     <string>com.github.iancohn.download.DellSupportAssist-Win</string>
+    <key>Input</key>
+    <dict/>
     <key>MinimumVersion</key>
     <string>2.0.0</string>
-    <key>Input</key>
-    <dict>
-    </dict>
     <key>Process</key>
     <array>
         <dict>
