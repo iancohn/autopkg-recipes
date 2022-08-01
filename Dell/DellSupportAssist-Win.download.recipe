@@ -9,7 +9,8 @@
     <key>MinimumVersion</key>
     <string>2.0.0</string>
     <key>Input</key>
-    <dict/>
+    <dict>
+    </dict>
     <key>Process</key>
     <array>
         <dict>
