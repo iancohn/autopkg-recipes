@@ -8,6 +8,8 @@
     <string>com.github.iancohn.download.DellSupportAssist-Win</string>
     <key>MinimumVersion</key>
     <string>2.0.0</string>
+    <key>INPUT</key>
+    <dict/>
     <key>Process</key>
     <array>
         <dict>
