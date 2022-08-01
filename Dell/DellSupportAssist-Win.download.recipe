@@ -8,7 +8,7 @@
     <string>com.github.iancohn.download.DellSupportAssist-Win</string>
     <key>MinimumVersion</key>
     <string>2.0.0</string>
-    <key>INPUT</key>
+    <key>Input</key>
     <dict/>
     <key>Process</key>
     <array>
@@ -18,7 +18,7 @@
             <key>Arguments</key>
             <dict>
                 <key>url</key>
-                <string>%download_url%</string>
+                <string>https://downloads.dell.com/serviceability/catalog/SupportAssistInstaller.exe</string>
                  <key>request_headers</key>
                     <dict>
                             <key>user-agent</key>
