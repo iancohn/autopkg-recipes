@@ -55,8 +55,6 @@
                   <string>01775</string>
                   <key>Library/AutoPkg</key>
                   <string>0775</string>
-                  <!-- <key>Library/AutoPkg/autopkglib</key>
-                  <string>0775</string> -->
                   <key>Library/AutoPkg/Python3</key>
                   <string>0775</string>
                   <key>Library/AutoPkg/Python3/Python.framework</key>
@@ -210,10 +208,6 @@
                   <string>%RECIPE_CACHE_DIR%/SeleniumEngine-Source/</string>
               </array>
           </dict>
-      </dict>
-      <dict>
-          <key>Processor</key>
-          <string>EndOfCheckPhase</string>
       </dict>
     </array>
 </dict>
