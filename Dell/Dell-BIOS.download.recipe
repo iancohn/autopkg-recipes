@@ -1,0 +1,209 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <key>Description</key>
+    <string>This recipe should be run via overrides with the DELL_* strings overridden.
+            DELL_PRODUCT_FAMILY - Self explanatory. Possible values include:
+              Optiplex
+              Precision
+              Latitude
+              XPS
+            DELL_PRODUCT_MODEL - This is the product model and should correlate
+            to the folder where the driver CAB resides in ManualUploads, but may also have 'aio' at
+            the end. For example:
+            7470-aio
+            7020
+            DELL_PRODUCT_SUFFIX - Models like the standard Optiplex 7020 also have -desktop
+            appended, although this string does not appear in the ManualUploads folder name,
+            thus its declaration here as a separate variable.
+
+            To test the values being used here, construct a url from the inputs as:
+            https://www.dell.com/support/home/en-us/product-support/product/%DELL_PRODUCT_FAMILY%-%DELL_PRODUCT_MODEL%%DELL_PRODUCT_SUFFIX%/drivers
+            example: https://www.dell.com/support/home/en-us/product-support/product/optiplex-7020-desktop/drivers
+            This should navigate you to the product page where drivers will be downloaded.
+
+            OS_NAME - The Operating system you would select on the website above. Typically 'Windows 10, 64-bit'
+            OS_SHELL - either 'win32', 'win64', or 'WinPE'
+
+            bypass_survey - DO NOT ALTER THIS VALUE. This value is used to bypass surveys that Dell's
+            website will occassionally display, which would otherwise block the recipe from continuing.
+    </string>
+    <key>Identifier</key>
+    <string>com.github.iancohn.download.Dell-BIOS</string>
+    <key>Input</key>
+    <dict>
+        <key>DELL_PRODUCT_FAMILY</key>
+        <string>Optiplex</string>
+        <key>DELL_PRODUCT_MODEL</key>
+        <string>5090</string>
+        <key>DELL_PRODUCT_SUFFIX</key>
+        <string>-desktop</string>
+        <key>OS_SHELL</key>
+        <string>win10</string>
+        <key>OS_NAME</key>
+        <string>Windows 10, 64-bit</string>
+        <key>CURL_USER_AGENT</key>
+        <string>Mozilla/5.0 (Windows NT 6.3; Win64, x64; Trident/7.0; rv:11.0) like Gecko</string>
+        <key>bypass_survey</key>
+        <string><![CDATA[
+self.output('Checking to see if there is a survey iFrame.')
+if browser.find_elements_by_id('iframeSurvey') == []:
+  self.output('No Dell Survey detected. Continuing', verbose_level=3)
+else:
+  self.output('Website has displayed a survey... Declining it now.')
+  browser.switch_to.frame(browser.find_element_by_id('iframeSurvey'))
+  browser.find_element_by_id('noButtonIPDell').click()
+          ]]></string>
+    </dict>
+    <key>MinimumVersion</key>
+    <string>2.0.0</string>
+    <key>Process</key>
+    <array>
+        <dict>
+          <key>Processor</key>
+          <string>Selenium</string>
+          <key>Arguments</key>
+          <dict>
+            <key>primary_url</key>
+            <string>https://www.dell.com/support/home/en-us/product-support/product/%DELL_PRODUCT_FAMILY%-%DELL_PRODUCT_MODEL%%DELL_PRODUCT_SUFFIX%/drivers</string>
+            <key>re_pattern</key>
+            <string><![CDATA[download_url\=\"?(?P<download_url>https\:\/\/dl.dell.com\/.*\.exe)\"?[\s]*details_url\=\s?\"(?P<details_url>https\:\/\/www.dell.com\/.*?)\"[\s]*bios_version\=\"(?P<bios_version>[\w\.]*)\"[\s]*release_date\=[\s]?\"(?P<release_date>[\d\w\s]*)\"]]></string>
+            <key>re_flags</key>
+            <array>
+              <string>IGNORECASE</string>
+            </array>
+            <key>selenium_options</key>
+            <array/>
+            <key>selenium_commands</key>
+            <array>
+              <string>time.sleep(1.0)</string>
+              <string>%bypass_survey%</string>
+              <string>time.sleep(2.0)</string>
+              <string>categoryDropdown = browser.find_elements_by_id('ddl-category')</string>
+              <string>self.output("({}) Category dropdowns found. Selecting the first one.".format(len(categoryDropdown)), verbose_level=3)</string>
+              <string><![CDATA[
+if len(categoryDropdown) == 0:
+  self.output('No category selector id found.', verbose_level=2)
+  raise ProcessorError('No category id found.')
+
+]]>
+  </string>
+  <string>self.output('ddl-category element found. Continuing')</string>
+  <string>categoryDropdown[0].click()</string>
+  <string>time.sleep(1.0)</string>
+  <string>self.output("({}) options found.".format(str(len(categoryDropdown[0].find_elements_by_tag_name('label')))))</string>
+  <string><![CDATA[
+for category in categoryDropdown[0].find_elements_by_tag_name('label'):
+  self.output('Category Text is {}'.format(category.get_attribute('innerHTML')), verbose_level=3)
+  self.output('fnmatch Result: {}'.format(fnmatch.fnmatch(category.get_attribute('innerHTML'), "*BIOS*")), verbose_level=3)
+  if fnmatch.fnmatch(category.get_attribute('innerHTML'), "*BIOS*") == True:
+    self.output('Found BIOS Category in drop down menu', verbose_level=2)
+    self.output('Selecting BIOS Category', verbose_level=2)
+    category.click()
+    categoryDropdown[0].click()
+    time.sleep(1.0)
+    categoryDropdown[0].click()
+    time.sleep(1.0)
+    break
+  else:
+    self.output('No Match',verbose_level=3)
+    self.output("{} does not match ('BIOS'). Continuing.".format(category.text), verbose_level=3)
+
+                ]]></string>
+              <string>%bypass_survey%</string>
+              <string>time.sleep(2.0)</string>
+              <string><![CDATA[
+for row in browser.find_elements_by_tag_name('tr'):
+ if (
+  fnmatch.fnmatch(row.text, "*System BIOS*")
+ ) and (
+  fnmatch.fnmatch(
+   row.find_elements_by_link_text('Download')[0].get_attribute('href').lower(),
+   "https://dl.dell.com/*/*.exe".lower()
+  )
+ ):
+  self.output("Row matches.  Selecting it.", verbose_level=3)
+  selectedRow = row
+  break
+ else:
+  self.output("Row does not match. Continuing to next", verbose_level=3)
+
+]]></string>
+            <string>self.output("Selecting variables.", verbose_level=3)</string>
+            <string>download_url = selectedRow.find_elements_by_link_text('Download')[0].get_attribute('href').lower().replace(" ", "%20")</string>
+            <string>self.output("Found download_url ({})".format(download_url), verbose_level=2)</string>
+            <string>time.sleep(2.0)</string>
+            <string>self.output("Clicking Driver Details Toggle", verbose_level=3)</string>
+            <string>#self.output(selectedRow.get_attribute('innerHTML'), verbose_level=3)</string>
+            <string>detailsBtn = selectedRow.find_element_by_name('btnDriverListToggle')</string>
+            <string>browser.execute_script("window.scrollTo(0, 1000)")</string>
+            <string>time.sleep(2.0)</string>
+            <string>%bypass_survey%</string>
+            <string>time.sleep(2.0)</string>
+            <string>self.output(str(dir(detailsBtn)), verbose_level=3)</string>
+            <string>detailsBtn.click()</string>
+            <string>#self.output("Details Button Enabled: {}".format(detailsBtn.is_enabled()), verbose_level=3)</string>
+            <string>#self.output(detailsBtn.get_attribute('innerHTML'), verbose_level=3)</string>
+            <string>time.sleep(2.0)</string>
+            <string>details_url = browser.find_elements_by_link_text('View full driver details')[0].get_attribute('href').lower().replace(" ", "%20")</string>
+            <string>self.output("Found details url ({})".format(details_url), verbose_level=2)</string>
+            <string>browser.get(details_url)</string>
+            <string>time.sleep(2.0)</string>
+            <string>%bypass_survey%</string>
+            <string><![CDATA[
+for row in browser.find_elements_by_class_name('row'):
+ if len(row.find_elements_by_id('driverVersionForDriver')) == 1:
+  rowIndex = browser.find_elements_by_class_name('row').index(row)
+  self.output("Selected row {}".format(rowIndex), verbose_level=3)
+  for c in row.find_elements_by_class_name('col-md-3'):
+   if len(c.find_elements_by_id('driverVersionForDriver')) == 1:
+    biosVersion = c.find_element_by_class_name('invertRails').text.split(',')[0].strip()
+    self.output("Found BIOS Version ({})".format(biosVersion), verbose_level=2)
+   elif len(c.find_elements_by_id('driverRDFordriver')) == 1:
+    releaseDate = c.find_elements_by_class_name('invertRails')[0].text.strip()
+    self.output("Found BIOS Release Date ({})".format(releaseDate))
+  break
+ else:
+  self.output("No version found in row. Contnuing.", verbose_level=3)
+
+]]>
+              </string>
+              <string>self.output("Download URL: {}".format(download_url),verbose_level = 3)</string>
+              <string>self.output("Details URL: {}".format(details_url),verbose_level = 3)</string>
+              <string>self.output("BIOS Version: {}".format(str(biosVersion)),verbose_level = 3)</string>
+              <string>self.output("Release Date: {}".format(releaseDate),verbose_level = 3)</string>
+              <string>self.content = "download_url=\"{}\"    details_url=\"{}\"    bios_version=\"{}\"    release_date=\"{}\"".format(download_url, details_url,biosVersion,releaseDate)</string>
+              <string>self.output("Set 'content' variable ({})".format(self.content))</string>
+              <string>time.sleep(5.0)</string>
+            </array>
+          </dict>
+        </dict>
+        <dict>
+          <key>Processor</key>
+          <string>StopProcessingIf</string>
+          <key>Arguments</key>
+          <dict>
+            <key>predicate</key>
+            <string>download_url == "" OR download_url == "None"</string>
+          </dict>
+        </dict>
+        <dict>
+          <key>Processor</key>
+          <string>URLDownloader</string>
+          <key>Arguments</key>
+          <dict>
+            <key>url</key>
+            <string>%download_url%</string>
+            <key>request_headers</key>
+            <dict>
+              <key>USER-AGENT</key>
+              <string>%CURL_USER_AGENT%</string>
+            </dict>
+            <key>filename</key>
+            <string>%DELL_PRODUCT_MODEL%-BIOS-%bios_version%.exe</string>
+          </dict>
+        </dict>
+    </array>
+</dict>
+</plist>
