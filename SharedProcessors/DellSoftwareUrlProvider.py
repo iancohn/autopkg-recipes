@@ -176,7 +176,7 @@ class DellSoftwareUrlProvider(URLGetter):
         category = self.env.get("CATEGORY", self.input_variables["CATEGORY"]["default"])
         fileType = self.env.get("FILE_TYPE", self.input_variables["FILE_TYPE"]["default"])
         rePattern = self.env.get("DRIVER_NAME_RE_PATTERN", self.input_variables["DRIVER_NAME_RE_PATTERN"]["default"])
-        baseUrl = self.env.get("DELL_BASE_URL")
+        baseUrl = self.env.get("DELL_BASE_URL",DELL_BASE_URL)
         if self.env.get("FORM_FACTOR") >= "":
             formFactor = self.env.get("FORM_FACTOR")
         else:
