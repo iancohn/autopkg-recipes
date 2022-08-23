@@ -203,7 +203,7 @@ class DellSoftwareUrlProvider(URLGetter):
             for product in softwares["DriverListData"]:
                 self.output("Desired Type: {}\t\tFound Type:{}".format(fileType,product["Type"]),verbose_level=3)
                 if (
-                    product["Type"] == fileType and
+                    product["FileFrmtInfo"]["FileType"] == fileType and
                     2 == 2
                 ):
                     selected_product = product
