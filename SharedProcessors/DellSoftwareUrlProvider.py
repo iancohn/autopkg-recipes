@@ -192,7 +192,8 @@ class DellSoftwareUrlProvider(URLGetter):
             "&oscode={}".format(str(osCode))
         )
 
-        self.output("Retrieving software products from Dell URL ({})".format(driverSearchUrl))
+        self.output("Retrieving software products from Dell URL ({})".format(driverSearchUrl), verbose_level=3)
+        self.output("CURL_CMD: {}".format(self.curl_cmd),verbose_level=3)
         blob = self.download(driverSearchUrl)
         self.output(blob)
         
