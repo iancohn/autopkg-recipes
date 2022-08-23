@@ -185,8 +185,8 @@ class DellSoftwareUrlProvider(URLGetter):
         self.output("Constructing URL", verbose_level=3)
         driverSearchUrl = (
             baseUrl + 
-            ("productCode={}".format(productCode)) +
-            "&oscode={}".format(osCode)
+            "productCode={}".format(str(productCode)) +
+            "&oscode={}".format(str(osCode))
         )
 
         self.output("Retrieving software products from Dell URL ({})".format(driverSearchUrl))
