@@ -194,19 +194,21 @@ class DellSoftwareUrlProvider(URLGetter):
         )
 
         self.output("Retrieving software products from Dell URL ({})".format(driverSearchUrl), verbose_level=3)
-        self.output("self: {}".format(self.__dict__),verbose_level=3)
-
-        blob = self.download(driverSearchUrl, text=True, headers=headers)
-                
-        softwares = json.loads(blob)
-        self.output("Resulting Product Code: {}".format(softwares["ProductCode"]),verbose_level=3)
 
         try:
+            blob = self.download(driverSearchUrl, text=True, headers=headers)
+            softwares = json.loads(blob)
+            self.output("Retrieved {} packages for Dell product with code: {}".format(len(softwares["DriverListData"]),softwares["ProductCode"]),verbose_level=3)
         # Select array item by product name
-            for item in softwares:
-                if item["Product"] == product:
-                    selected_product = item["Releases"]
-            self.output("Selected product")
+            for product in softwares["DriverListData"]:
+                if (
+                    product["Type"] == fileType and
+                    1 == 1
+                ):
+                    selected_product = product
+
+            self.output("Selected product {}".format(selected_product["DriverName"]))
+            asdfasdf
         # Select Architecture and and Platform
             releases = []
             for release in selected_product:
