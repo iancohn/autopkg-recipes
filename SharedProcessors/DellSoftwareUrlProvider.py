@@ -132,7 +132,7 @@ class DellSoftwareUrlProvider(URLGetter):
             )
         },
         "DRIVER_NAME_RE_PATTERN": {
-            "required": True,
+            "required": False,
             "default": DEFAULT_RE,
             "description": "A RegEx pattern to use to match the Driver Name against."
         }
@@ -166,6 +166,8 @@ class DellSoftwareUrlProvider(URLGetter):
         family = self.env.get("FAMILY", self.input_variables["FAMILY"]["default"])
         model = self.env.get("MODEL", self.input_variables["MODEL"]["default"])
         formFactor = self.env.get("FORM_FACTOR", self.input_variables["FORM_FACTOR"]["default"])
+        if self.env.get("PRODUCT_CODE_OVERRIDE") == None:
+            PRODUCT_CODE_OVERRIDE = ""
         productCode = self.env.get(
             "PRODUCT_CODE_OVERRIDE",
             "{}-{}-{}".format(family,model,formFactor)
