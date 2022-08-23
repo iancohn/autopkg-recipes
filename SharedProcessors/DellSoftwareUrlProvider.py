@@ -201,6 +201,7 @@ class DellSoftwareUrlProvider(URLGetter):
             self.output("Retrieved {} packages for Dell product with code: {}".format(len(softwares["DriverListData"]),softwares["ProductCode"]),verbose_level=3)
         # Select array item by product name
             for product in softwares["DriverListData"]:
+                self.output("Desired Type: {}\t\tFound Type:{}".format(fileType,product["Type"]),verbose_level=3)
                 if (
                     product["Type"] == fileType and
                     2 == 2
