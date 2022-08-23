@@ -207,7 +207,9 @@ class DellSoftwareUrlProvider(URLGetter):
                     2 == 2
                 ):
                     selected_product = product
-
+                    continue
+                else:
+                    self.output("File Type does not match")
 
             self.output("Selected product {}".format(selected_product["DriverName"]))
             asdfasdf
