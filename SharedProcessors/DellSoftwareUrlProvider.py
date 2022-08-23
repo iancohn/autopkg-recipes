@@ -197,14 +197,13 @@ class DellSoftwareUrlProvider(URLGetter):
         self.output("self: {}".format(self.__dict__),verbose_level=3)
 
         blob = self.download(driverSearchUrl, text=True, headers=headers)
-        self.output(blob)
-        
-        feed_json = json.loads(blob)
-        self.output("Extracting JSON Values for %s - %s - %s" % (platform, architecture, product))
+                
+        softwares = json.loads(blob)
+        self.output("Resulting Product Code: {}".format(softwares["ProductCode"]),verbose_level=3)
 
         try:
         # Select array item by product name
-            for item in feed_json:
+            for item in softwares:
                 if item["Product"] == product:
                     selected_product = item["Releases"]
             self.output("Selected product")
