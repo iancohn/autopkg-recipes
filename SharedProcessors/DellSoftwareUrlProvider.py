@@ -78,7 +78,7 @@ DEFAULT_MODEL = "5000"
 DEFAULT_FILE_TYPE = "BEW"
 DEFAULT_RE = ".*"
 
-class MicrosoftEdgeURLProvider(URLGetter):
+class DellSoftwareUrlProvider(URLGetter):
     """Use Dell Driver Fetch API to retrieve software product download url"""
     description = "Provides a download url and file metadata for Dell software packages."
     input_variables = {
@@ -190,6 +190,8 @@ class MicrosoftEdgeURLProvider(URLGetter):
         self.add_curl_headers(headers={"X-Requested-With": "XMLHttpRequest", "Accept": "application/json"})
 
         blob = self.download(driverSearchUrl)
+        self.output(blob)
+        
         feed_json = json.loads(blob)
         self.output("Extracting JSON Values for %s - %s - %s" % (platform, architecture, product))
 
@@ -229,5 +231,5 @@ class MicrosoftEdgeURLProvider(URLGetter):
         self.env["PublishedTime"] = PublishedTime
 
 if __name__ == "__main__":
-    PROCESSOR = MicrosoftEdgeURLProvider()
+    PROCESSOR = DellSoftwareUrlProvider()
     PROCESSOR.execute_shell()
