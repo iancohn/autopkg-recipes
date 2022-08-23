@@ -158,13 +158,14 @@ class DellSoftwareUrlProvider(URLGetter):
         "FileSize": {"description": "The size of the file in bytes."},
         "ConvertedFileSize": {"description": "The size of the file as the largest, easily readable size."}
     }
-    request_headers = {
-        "X-Requested-With": "XMLHttpRequest", 
-        "Accept": "application/json"
-    }
+
     __doc__ = description
 
     def main(self):
+        headers = {
+            "X-Requested-With": "XMLHttpRequest", 
+            "Accept": "application/json"
+        }
         osCode = self.env.get("OS_CODE", self.input_variables["OS_CODE"]["default"])
         family = self.env.get("FAMILY", self.input_variables["FAMILY"]["default"])
         model = self.env.get("MODEL", self.input_variables["MODEL"]["default"])
@@ -194,7 +195,8 @@ class DellSoftwareUrlProvider(URLGetter):
 
         self.output("Retrieving software products from Dell URL ({})".format(driverSearchUrl), verbose_level=3)
         self.output("self: {}".format(self.__dict__),verbose_level=3)
-        blob = self.download(driverSearchUrl, text=True, headers=self.input_variables["request_headers"])
+
+        blob = self.download(driverSearchUrl, text=True, headers=headers)
         self.output(blob)
         
         feed_json = json.loads(blob)
