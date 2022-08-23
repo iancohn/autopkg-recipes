@@ -194,7 +194,7 @@ class DellSoftwareUrlProvider(URLGetter):
 
         self.output("Retrieving software products from Dell URL ({})".format(driverSearchUrl), verbose_level=3)
         self.output("self: {}".format(self.__dict__),verbose_level=3)
-        blob = self.download(driverSearchUrl)
+        blob = self.download(driverSearchUrl, text=True, headers=self.input_variables["request_headers"])
         self.output(blob)
         
         feed_json = json.loads(blob)
