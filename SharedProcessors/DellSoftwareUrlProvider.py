@@ -203,7 +203,7 @@ class DellSoftwareUrlProvider(URLGetter):
             for product in softwares["DriverListData"]:
                 if (
                     product["Type"] == fileType and
-                    1 == 1
+                    2 == 2
                 ):
                     selected_product = product
 
