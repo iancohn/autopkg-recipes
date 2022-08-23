@@ -158,7 +158,10 @@ class DellSoftwareUrlProvider(URLGetter):
         "FileSize": {"description": "The size of the file in bytes."},
         "ConvertedFileSize": {"description": "The size of the file as the largest, easily readable size."}
     }
-
+    request_headers = {
+        "X-Requested-With": "XMLHttpRequest", 
+        "Accept": "application/json"
+    }
     __doc__ = description
 
     def main(self):
@@ -190,8 +193,6 @@ class DellSoftwareUrlProvider(URLGetter):
         )
 
         self.output("Retrieving software products from Dell URL ({})".format(driverSearchUrl))
-        self.add_curl_headers(headers={"X-Requested-With": "XMLHttpRequest", "Accept": "application/json"})
-
         blob = self.download(driverSearchUrl)
         self.output(blob)
         
