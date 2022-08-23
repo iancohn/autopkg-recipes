@@ -207,6 +207,7 @@ class DellSoftwareUrlProvider(URLGetter):
                 ):
                     selected_product = product
 
+
             self.output("Selected product {}".format(selected_product["DriverName"]))
             asdfasdf
         # Select Architecture and and Platform
