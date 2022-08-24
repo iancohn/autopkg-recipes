@@ -274,6 +274,7 @@ class DellSoftwareUrlProvider(URLGetter):
                 cves = ",".join(cveMatches)
             else:
                 self.output("Declinging to search for CVEs mitigated by this package.", verbose_level=3)
+                cves = None
 
         # Set output variables
             self.env["DriverId"] = software["DriverId"] or ""
