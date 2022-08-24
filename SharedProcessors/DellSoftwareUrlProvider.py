@@ -23,9 +23,11 @@ import json
 import re
 
 DELL_BASE_URL = "https://www.dell.com/support/driver/en-us/ips/api/driverlist/fetchdriversbyproduct?"
+DELL_DETAILS_BASE_URL = "https://www.dell.com/support/home/en-us/drivers/driversdetails?driverid="
 # productcode=precision-17-7760-laptop
 # &oscode=WT64A
 # X-Requested-With : XMLHttpRequest
+# CVE\-\d{4}\-\d{4}
 __all__ = ["DellSoftwareUrlProvider"]
 
 #Define Options
@@ -79,7 +81,6 @@ DEFAULT_CAT = "BI"
 DEFAULT_FILE_TYPE = "BEW"
 DEFAULT_RE = ".*"
 DEFAULT_RE_FIELD = ""
-
 class DellSoftwareUrlProvider(URLGetter):
     """Use Dell Driver Fetch API to retrieve software product download url"""
     description = "Provides a download url and file metadata for Dell software packages."
@@ -142,6 +143,14 @@ class DellSoftwareUrlProvider(URLGetter):
             "required": False,
             "default": DEFAULT_RE,
             "description": "A RegEx pattern to use to match the Driver Name against."
+        },
+        "POPULATE_CVES": {
+            "required": False,
+            "default": False,
+            "description": (
+                "If True, after retrieving driver details, the processor will continue "
+                "to search the details page for CVEs addressed by this package"
+            )
         }
     
     }
@@ -164,7 +173,8 @@ class DellSoftwareUrlProvider(URLGetter):
         "FileName": {"description": "The name of the file."},
         "FileFormatName": {"description": "The format of the file."},
         "FileSize": {"description": "The size of the file in bytes."},
-        "ConvertedFileSize": {"description": "The size of the file as the largest, easily readable size."}
+        "ConvertedFileSize": {"description": "The size of the file as the largest, easily readable size."},
+        "CVE": {"description": "A comma separated list of CVEs addressed by the retrieved software, as listed by Dell."}
     }
 
     __doc__ = description
@@ -238,35 +248,60 @@ class DellSoftwareUrlProvider(URLGetter):
             
             software = selected_products[0]  
             self.output("Selected product {}".format(software["DriverName"]))
-            lkjaslkfdj
-        # Select Architecture and and Platform
-            releases = []
-            for release in selected_product:
-                if ((release["Platform"] == platform ) and (release["Architecture"] == architecture)):
-                    releases.append(release)
-        # Sort releases, and select latest released
-            latest_release = sorted(releases, key=lambda x: x["PublishedTime"], reverse=True )[0]
-            url = latest_release["Artifacts"][0]["Location"]
-            version = latest_release["ProductVersion"]
-            installer_version = platform + "-" + architecture + "-v" + latest_release["ProductVersion"] + "-"+ product
-            installer_type = latest_release["Artifacts"][0]["ArtifactName"]
-            Hash = latest_release["Artifacts"][0]["Hash"]
-            HashAlgorithm = latest_release["Artifacts"][0]["HashAlgorithm"]
-            SizeInBytes = latest_release["Artifacts"][0]["SizeInBytes"]
-            PublishedTime = latest_release["PublishedTime"]
+            
+            dellVersion = software["DellVer"]
+            self.output("Parsing Version string as given by Dell: {}".format(dellVersion), verbose_level=2)
+            
+            if fnmatch(dellVersion, "*,*"):
+                self.output("Splitting version", verbose_level=3)
+                splitVersion = dellVersion.split(',')
+                versionString = splitVersion[0].strip()
+                versionFriendly = splitVersion[1].strip()
+            else:
+                self.output("Version does not requiring splitting.")
+                versionString = dellVersion.strip()
+                versionFriendly = dellVersion.strip()
+            
+            if self.env.get("POPULATE_CVES") == True:
+                detailsUrl = DELL_DETAILS_BASE_URL + software["DriverId"]
+                self.output(
+                    "Attempting to parse the driver details page to retrieve CVE details. ({})".format(detailsUrl),
+                    verbose_level=2
+                )
+                detailsBlob = self.download(detailsUrl)
+                cveMatches = re.findall(r'CVE\-\d{4}\-\d{4}',detailsBlob)
+                self.output("{} CVEs found on Dell's details page for this driver.", verbose_level=3)
+                cves = ",".join(cveMatches)
+            else:
+                self.output("Declinging to search for CVEs mitigated by this package.", verbose_level=3)
+
+        # Set output variables
+            self.env["DriverId"] = software["DriverId"] or ""
+            self.env["DriverName"] = software["DriverName"] or ""
+            self.env["Type"] = software["Type"] or ""
+            self.env["TypeName"] = software["TypeName"] or ""
+            self.env["Importance"] = software["Importance"] or ""
+            self.env["ImportanceId"] = software["ImpId"] or ""
+            self.env["ReleaseDate"] = software["ReleaseDateValue"] or ""
+            self.env["RequiresRestart"] =software["IsRestart"] or ""
+            self.env["DellVersion"] = software["DellVer"] or ""
+            self.env["Version"] = versionString or ""
+            self.env["VersionFriendly"] = versionFriendly or ""
+            self.env["DellDescription"] = software["BrfDesc"] or ""
+            self.env["url"] = software["FileFrmtInfo"]["HttpFileLocation"] or ""
+            self.env["CatName"] = software["CatName"] or ""
+            self.env["FileId"] = software["FileFrmtInfo"]["FileId"] or ""
+            self.env["FileName"] = software["FileFrmtInfo"]["FileName"] or ""
+            self.env["FileFormatName"] = software["FileFrmtInfo"]["FileFormatName"] or ""
+            self.env["FileSize"] = software["FileFrmtInfo"]["FileSize"] or ""
+            self.env["ConvertedFileSize"] = software["FileFrmtInfo"]["ConvertedFileSize"] or ""
+            self.env["CVE"] = cves or ""
+
+
+
         except Exception as e:
             self.output("Unexpected JSON encountered.")
             raise e
-
-        # Return Values
-        self.env["url"] = url
-        self.env["version"] = version
-        self.env["installer_version"] = installer_version
-        self.env["Hash"] = Hash
-        self.env["HashAlgorithm"] = HashAlgorithm
-        self.env["SizeInBytes"] = SizeInBytes
-        self.env["installer_type"] = installer_type
-        self.env["PublishedTime"] = PublishedTime
 
 if __name__ == "__main__":
     PROCESSOR = DellSoftwareUrlProvider()
