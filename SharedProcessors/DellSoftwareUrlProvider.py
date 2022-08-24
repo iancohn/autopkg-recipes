@@ -227,12 +227,14 @@ class DellSoftwareUrlProvider(URLGetter):
                 if (osCode.upper() in map(str.upper, product["AppOses"])) != True:
                     self.output("OS does not match.", verbose_level=4)
                     continue
-
-                if len(re.findall(re.compile(nameRePattern),str(product["DriverName"]))) == 0 :
+                
+                self.output(str(re.findall(re.compile(nameRePattern), str(product["DriverName"]))))
+                if len(re.findall(re.compile(nameRePattern), str(product["DriverName"]))) == 0 :
                     self.output("Driver Name does not match the supplied RegEx pattern.", verbose_level=4)
                     continue
                 
-                if len(re.findall(re.compile(fileNameRePattern),str(product["FileFrmtInfo"]["FileName"]))) == 0:
+                self.output(str(re.findall(re.compile(fileNameRePattern), str(product["FileFrmtInfo"]["FileName"]))))
+                if len(re.findall(re.compile(fileNameRePattern), str(product["FileFrmtInfo"]["FileName"]))) == 0:
                     self.output("Driver File Name does not match the supplied RegEx pattern.", verbose_level=4)
                     continue                
                 
