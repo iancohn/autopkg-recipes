@@ -5,7 +5,7 @@
 	<key>Description</key>
 	<string>Recipe description</string>
 	<key>Identifier</key>
-	<string>com.github.iancohn.download.DellBios</string>
+	<string>com.github.iancohn.download.DellBios-Win</string>
 	<key>Input</key>
 	<dict>
 		<key>POPULATE_CVES</key>
@@ -34,6 +34,13 @@
 			<dict>
 				<key>download_url</key>
 				<string>%url%</string>
+				<key>curl_opts</key>
+				<dict/>
+				<key>request_headers</key>
+				<dict>
+					<key>User-Agent</key>
+					<string>Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/104.0.5112.102 Safari/537.36</string>
+				</dict>
 			</dict>
 		</dict>
 	</array>
