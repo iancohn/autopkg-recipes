@@ -229,11 +229,11 @@ class DellSoftwareUrlProvider(URLGetter):
 
                     continue
 
-                if re.match(nameRePattern,str(product["DriverName"])) == None:
+                if len(re.findall(re.compile(nameRePattern),str(product["DriverName"]))) == 0 :
                     self.output("Driver Name does not match the supplied RegEx pattern.", verbose_level=4)
                     continue
                 
-                if re.match(fileNameRePattern,str(product["FileFrmtInfo"]["FileName"])) == None:
+                if len(re.findall(re.compile(fileNameRePattern),str(product["FileFrmtInfo"]["FileName"]))) == 0:
                     self.output("Driver File Name does not match the supplied RegEx pattern.", verbose_level=4)
                     continue                
                 
