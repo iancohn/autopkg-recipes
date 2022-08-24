@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>Description</key>
+	<string>Recipe description</string>
+	<key>Identifier</key>
+	<string>com.github.iancohn.download.DellBios</string>
+	<key>Input</key>
+	<dict>
+		<key>POPULATE_CVES</key>
+		<true/>
+		<key>FAMILY</key>
+		<string>Optiplex</string>
+		<key>MODEL</key>
+		<string>5090</string>
+		<key>FILE_TYPE</key>
+		<string>BEW</string>
+	</dict>
+	<key>MinimumVersion</key>
+	<string>1.0</string>
+	<key>Process</key>
+	<array>
+		<dict>
+			<key>Arguments</key>
+			<dict/>
+			<key>Processor</key>
+			<string>com.github.iancohn.SharedProcessors/DellSoftwareUrlProvider</string>
+		</dict>
+	</array>
+</dict>
+</plist>

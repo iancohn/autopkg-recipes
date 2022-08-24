@@ -227,14 +227,14 @@ class DellSoftwareUrlProvider(URLGetter):
                     self.output("OS does not match.", verbose_level=4)
                     continue
                 
-                self.output("Matching ({}) against pattern ({})".format(product["DriverName"], nameRePattern))
-                self.output(str(re.findall(re.compile(nameRePattern), str(product["DriverName"]))))
+                self.output("Matching ({}) against pattern ({})".format(product["DriverName"], nameRePattern), verbose_level=3)
+                self.output(str(re.findall(re.compile(nameRePattern), str(product["DriverName"]))), verbose_level=3)
                 if len(re.findall(re.compile(nameRePattern), str(product["DriverName"]))) == 0 :
                     self.output("Driver Name does not match the supplied RegEx pattern.", verbose_level=4)
                     continue
 
-                self.output("Matching ({}) against pattern ({})".format(product["FileFrmtInfo"]["FileName"], fileNameRePattern))
-                self.output(str(re.findall(re.compile(fileNameRePattern), str(product["FileFrmtInfo"]["FileName"]))))
+                self.output("Matching ({}) against pattern ({})".format(product["FileFrmtInfo"]["FileName"], fileNameRePattern), verbose_level=3)
+                self.output(str(re.findall(re.compile(fileNameRePattern), str(product["FileFrmtInfo"]["FileName"]))), verbose_level=3)
                 if len(re.findall(re.compile(fileNameRePattern), str(product["FileFrmtInfo"]["FileName"]))) == 0:
                     self.output("Driver File Name does not match the supplied RegEx pattern.", verbose_level=4)
                     continue                
