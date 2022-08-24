@@ -165,7 +165,7 @@ class DellSoftwareUrlProvider(URLGetter):
     def main(self):
         headers = {
             "X-Requested-With": "XMLHttpRequest", 
-            "Accept": "application/json"
+            "Accept": "application/json;charset=utf-8"
         }
         osCode = self.env.get("OS_CODE", self.input_variables["OS_CODE"]["default"])
         family = self.env.get("FAMILY", self.input_variables["FAMILY"]["default"])
