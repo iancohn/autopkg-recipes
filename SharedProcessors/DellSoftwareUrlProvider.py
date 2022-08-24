@@ -198,12 +198,13 @@ class DellSoftwareUrlProvider(URLGetter):
             selected_products = list()
             for product in softwares["DriverListData"]:
                 self.output("Desired Type: {}\t\tFound Type:{}".format(fileType,product["FileFrmtInfo"]["FileType"]),verbose_level=4)
+                
+                if str(product["FileFrmtInfo"]["FileType"]).lower() != fileType.lower():
+                    self.output("File Type does not match.",verbose_level=4)
+                    continue
+
                 if product["Cat"] != category:
                     self.output("Category does not match.",verbose_level=4)
-                    continue
-                
-                if product["FileFrmtInfo"]["FileType"].lower() != fileType.lower():
-                    self.output("File Type does not match.",verbose_level=4)
                     continue
 
                 if (osCode.upper() in map(str.upper, product["AppOses"])) == False:
