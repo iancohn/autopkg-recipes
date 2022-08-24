@@ -74,7 +74,7 @@ FILE_TYPE_OPT = [
 DEFAULT_FF = "Desktop"
 DEFAULT_FAM = "Optiplex"
 DEFAULT_MODEL = "5000"
-DEFAULT_OS = "WT64A"
+DEFAULT_OS = "BIOSA"
 DEFAULT_CAT = "BI"
 DEFAULT_FILE_TYPE = "BEW"
 DEFAULT_RE = ".*"
@@ -209,7 +209,7 @@ class DellSoftwareUrlProvider(URLGetter):
 
                 if (osCode.upper() in map(str.upper, product["AppOses"])) != True:
                     self.output("OS does not match.", verbose_level=4)
-                    
+
                     continue
 
                 if re.match(rePattern,str(product["DriverName"])) == None:
