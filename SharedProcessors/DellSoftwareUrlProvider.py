@@ -200,14 +200,14 @@ class DellSoftwareUrlProvider(URLGetter):
                 self.output("Desired Type: {}\t\tFound Type:{}".format(fileType,product["FileFrmtInfo"]["FileType"]),verbose_level=4)
                 if (
                     product["Cat"] == category and
-                    product["FileFrmtInfo"]["FileType"] == fileType and
+                    product["FileFrmtInfo"]["FileType"].lower() == fileType.lower() and
                     osCode.upper() in map(str.upper, product["AppOses"]) and
                     re.match(rePattern,str(product["DriverName"])) != None
                 ):
                     self.output("Found a matching product: {}".format(product["DriverName"]), verbose_level=2)
                     selected_products.append(product)
                 else:
-                    self.output("File Type does not match",verbose_level=4)
+                    self.output("File does not match",verbose_level=4)
             
 
             self.output("{} products found.".format(len(selected_products)), verbose_level=2)
