@@ -73,8 +73,9 @@ FILE_TYPE_OPT = [
 #Define Defaults
 DEFAULT_FF = "Desktop"
 DEFAULT_FAM = "Optiplex"
-DEFAULT_CAT = "BI"
 DEFAULT_MODEL = "5000"
+DEFAULT_OS = "WT64A"
+DEFAULT_CAT = "BI"
 DEFAULT_FILE_TYPE = "BEW"
 DEFAULT_RE = ".*"
 
@@ -84,7 +85,7 @@ class DellSoftwareUrlProvider(URLGetter):
     input_variables = {
         "OS_CODE": {
             "required": False,
-            "default": "WT64A",
+            "default": DEFAULT_OS,
             "description": "The OS Code to download the package for."
         },
         "PRODUCT_CODE_OVERRIDE": {
@@ -95,16 +96,16 @@ class DellSoftwareUrlProvider(URLGetter):
             )
         },
         "FAMILY": {
-            "required": True,
-            "default": "Optiplex",
+            "required": False,
+            "default": DEFAULT_FAM,
             "description": (
                 "The product family to use when searching Dell's downloads."
                 "Options: {}".format(PRODUCT_FAMILY_OPT)
             )
         },
         "MODEL": {
-            "required": True,
-            "default": "5000",
+            "required": False,
+            "default": DEFAULT_MODEL,
             "description": "The Model number (or name) to used for searching packages."
         },
         "FORM_FACTOR": {
@@ -116,7 +117,7 @@ class DellSoftwareUrlProvider(URLGetter):
             )
         },        
         "CATEGORY": {
-            "required": True,
+            "required": False,
             "default": DEFAULT_CAT,
             "description": (
                 "The category code of the software."
@@ -124,7 +125,7 @@ class DellSoftwareUrlProvider(URLGetter):
             )
         },
         "FILE_TYPE": {
-            "required": True,
+            "required": False,
             "default": DEFAULT_FILE_TYPE,
             "description": (
                 "The code for the file type to download."
