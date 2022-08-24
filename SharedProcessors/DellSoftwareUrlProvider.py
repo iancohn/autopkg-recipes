@@ -172,9 +172,6 @@ class DellSoftwareUrlProvider(URLGetter):
         family = self.env.get("FAMILY", self.input_variables["FAMILY"]["default"])
         model = self.env.get("MODEL", self.input_variables["MODEL"]["default"])
         formFactor = self.env.get("FORM_FACTOR", self.input_variables["FORM_FACTOR"]["default"])
-        if self.env.get("PRODUCT_CODE_OVERRIDE") == None:
-            PRODUCT_CODE_OVERRIDE = ""
-        
         productCode = self.env.get(
             "PRODUCT_CODE_OVERRIDE",
             "{}-{}-{}".format(family,model,formFactor)
@@ -200,11 +197,11 @@ class DellSoftwareUrlProvider(URLGetter):
         # Select array item by product name
             selected_products = list()
             for product in softwares["DriverListData"]:
-                self.output("Desired Type: {}\t\tFound Type:{}".format(fileType,product["FileType"]),verbose_level=4)
+                self.output("Desired Type: {}\t\tFound Type:{}".format(fileType,product["FileFrmtInfo"]["FileType"]),verbose_level=4)
                 if (
                     product["FileFrmtInfo"]["Cat"] == category and
                     product["FileFrmtInfo"]["FileType"] == fileType and
-                    #osCode.upper() in map(str.upper, product["AppOses"]) and
+                    osCode.upper() in map(str.upper, product["AppOses"]) and
                     re.match(rePattern,str(product["DriverName"]))
                 ):
                     self.output("Found a matching product: {}".format(product["DriverName"]), verbose_level=2)
