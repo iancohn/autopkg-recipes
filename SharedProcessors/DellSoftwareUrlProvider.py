@@ -268,7 +268,7 @@ class DellSoftwareUrlProvider(URLGetter):
                     "Attempting to parse the driver details page to retrieve CVE details. ({})".format(detailsUrl),
                     verbose_level=2
                 )
-                detailsBlob = self.download(detailsUrl)
+                detailsBlob = self.download(detailsUrl,text=True)
                 cveMatches = re.findall(r'CVE\-\d{4}\-\d{4}',detailsBlob)
                 self.output("{} CVEs found on Dell's details page for this driver.", verbose_level=3)
                 cves = ",".join(cveMatches)
