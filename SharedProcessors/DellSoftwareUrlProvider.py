@@ -137,7 +137,13 @@ class DellSoftwareUrlProvider(URLGetter):
             "required": False,
             "default": DEFAULT_RE,
             "description": "A RegEx pattern to use to match the Driver Name against."
+        },
+        "DRIVER_FILE_NAME_RE_PATTERN": {
+            "required": False,
+            "default": DEFAULT_RE,
+            "description": "A RegEx pattern to use to match the Driver Name against."
         }
+    
     }
     output_variables = {
         "DriverId": {"description": "The unique identifier assigned to the product by Dell."},
@@ -178,7 +184,8 @@ class DellSoftwareUrlProvider(URLGetter):
         )
         category = self.env.get("CATEGORY", self.input_variables["CATEGORY"]["default"])
         fileType = self.env.get("FILE_TYPE", self.input_variables["FILE_TYPE"]["default"])
-        rePattern = self.env.get("DRIVER_NAME_RE_PATTERN", self.input_variables["DRIVER_NAME_RE_PATTERN"]["default"])
+        nameRePattern = self.env.get("DRIVER_NAME_RE_PATTERN", self.input_variables["DRIVER_NAME_RE_PATTERN"]["default"])
+        fileNameRePattern = self.env.get("DRIVER_FILE_NAME_RE_PATTERN", self.input_variables["DRIVER_NAME_RE_PATTERN"]["default"])
         baseUrl = self.env.get("DELL_BASE_URL",DELL_BASE_URL)
 
         self.output("Constructing URL", verbose_level=3)
@@ -212,17 +219,26 @@ class DellSoftwareUrlProvider(URLGetter):
 
                     continue
 
-                if re.match(rePattern,str(product["DriverName"])) == None:
+                if re.match(nameRePattern,str(product["DriverName"])) == None:
                     self.output("Driver Name does not match the supplied RegEx pattern.", verbose_level=4)
                     continue
+                
+                if re.match(fileNameRePattern,str(product["FileFrmtInfo"]["FileName"])) == None:
+                    self.output("Driver File Name does not match the supplied RegEx pattern.", verbose_level=4)
+                    continue                
                 
                 self.output("Found a matching product: {}".format(product["DriverName"]), verbose_level=2)
                 selected_products.append(product)
 
             self.output("{} products found.".format(len(selected_products)), verbose_level=2)
-            asdfasdf
-            self.output("Selected product {}".format(selected_product["DriverName"]))
+            if len(selected_products) == 0:
+                ProcessorError("No products found.")
+            elif len(selected_products) > 1:
+                ProcessorError("Multiple products found. Could not determine the correct software desired.")
             
+            software = selected_products[0]  
+            self.output("Selected product {}".format(software["DriverName"]))
+            lkjaslkfdj
         # Select Architecture and and Platform
             releases = []
             for release in selected_product:
