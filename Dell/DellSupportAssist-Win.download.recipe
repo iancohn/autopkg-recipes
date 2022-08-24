@@ -8,8 +8,6 @@
 	<string>com.github.iancohn.download.DellSupportAssist-Win64</string>
 	<key>Input</key>
 	<dict>
-		<key>POPULATE_CVES</key>
-		<true/>
 		<key>OS_CODE</key>
 		<string>WT64A</string>
 		<key>CATEGORY</key>
