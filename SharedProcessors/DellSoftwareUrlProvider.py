@@ -199,7 +199,7 @@ class DellSoftwareUrlProvider(URLGetter):
             for product in softwares["DriverListData"]:
                 self.output("Desired Type: {}\t\tFound Type:{}".format(fileType,product["FileFrmtInfo"]["FileType"]),verbose_level=4)
                 if (
-                    product["FileFrmtInfo"]["Cat"] == category and
+                    product["Cat"] == category and
                     product["FileFrmtInfo"]["FileType"] == fileType and
                     osCode.upper() in map(str.upper, product["AppOses"]) and
                     re.match(rePattern,str(product["DriverName"]))
