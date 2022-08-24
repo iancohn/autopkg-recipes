@@ -202,7 +202,7 @@ class DellSoftwareUrlProvider(URLGetter):
                     product["Cat"] == category and
                     product["FileFrmtInfo"]["FileType"] == fileType and
                     osCode.upper() in map(str.upper, product["AppOses"]) and
-                    re.match(rePattern,str(product["DriverName"]))
+                    re.match(rePattern,str(product["DriverName"])) != None
                 ):
                     self.output("Found a matching product: {}".format(product["DriverName"]), verbose_level=2)
                     selected_products.append(product)
