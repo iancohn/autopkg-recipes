@@ -300,18 +300,6 @@ class DellSoftwareUrlProvider(URLGetter):
             self.env["ConvertedFileSize"] = software["FileFrmtInfo"]["ConvertedFileSize"] or ""
             self.env["CVE"] =               cves or ""
 
-        # Verbosely log extractions
-            self.output("DriverId: {}".format(self.env["DriverId"]), verbose_level=2)
-            self.output("DriverName: {}".format(self.env["DriverName"]), verbose_level=2)
-            self.output("ReleaseDate: {}".format(self.env["ReleaseDate"]), verbose_level=2)
-            self.output("DellVersion: {}".format(self.env["DellVersion"]), verbose_level=2)
-            self.output("Download URL: {}".format(self.env["url"]), verbose_level=2)
-            self.output("FileName: {}".format(self.env["FileName"]), verbose_level=2)
-            self.output("Size: {}".format(self.env["ConvertedFileSize"]), verbose_level=2)
-            self.output("CVEs: {}".format(self.env["CVE"]), verbose_level=2)
-
-
-
         except Exception as e:
             self.output("Unexpected JSON encountered.")
             raise e
