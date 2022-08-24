@@ -17,8 +17,8 @@
 
 #Factored for Python 3
 from __future__ import absolute_import
-
 from autopkglib import Processor, ProcessorError, URLGetter
+from fnmatch import fnmatch
 import json
 import re
 
@@ -182,10 +182,6 @@ class DellSoftwareUrlProvider(URLGetter):
         fileType = self.env.get("FILE_TYPE", self.input_variables["FILE_TYPE"]["default"])
         rePattern = self.env.get("DRIVER_NAME_RE_PATTERN", self.input_variables["DRIVER_NAME_RE_PATTERN"]["default"])
         baseUrl = self.env.get("DELL_BASE_URL",DELL_BASE_URL)
-        if self.env.get("FORM_FACTOR") >= "":
-            formFactor = self.env.get("FORM_FACTOR")
-        else:
-            self.output("Form Factor not set. Skipping.")
 
         self.output("Constructing URL", verbose_level=3)
         driverSearchUrl = (
@@ -204,17 +200,29 @@ class DellSoftwareUrlProvider(URLGetter):
             selected_products = []
             for product in softwares["DriverListData"]:
                 self.output("Desired Type: {}\t\tFound Type:{}".format(fileType,product["Type"]),verbose_level=4)
+                """
+                DEFAULT_OS = "WT64A" osCode
+                DEFAULT_CAT = "BI" category
+                DEFAULT_FILE_TYPE = "BEW" fileType
+                DEFAULT_RE = ".*" rePattern
+                """
+                
                 if (
                     product["FileFrmtInfo"]["FileType"] == fileType and
-                    2 == 2
+                    product["FileFrmtInfo"]["Cat"] == category and
+                    osCode.upper() in map(str.upper, product["AppOses"]) and
+                    fnmatch(product["FileFrmtInfo"]["FileName"],rePattern)
                 ):
-                    selected_product += product
-                    continue
+                    self.output("Found a matching product.", verbose_level=2)
+                    selected_products += product
                 else:
                     self.output("File Type does not match",verbose_level=4)
             
-            self.output("Selected product {}".format(selected_product["DriverName"]))
+
+            self.output("{} products found.".format(len(selected_products)), verbose_level=2)
             asdfasdf
+            self.output("Selected product {}".format(selected_product["DriverName"]))
+            
         # Select Architecture and and Platform
             releases = []
             for release in selected_product:
