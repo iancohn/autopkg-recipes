@@ -198,17 +198,24 @@ class DellSoftwareUrlProvider(URLGetter):
             selected_products = list()
             for product in softwares["DriverListData"]:
                 self.output("Desired Type: {}\t\tFound Type:{}".format(fileType,product["FileFrmtInfo"]["FileType"]),verbose_level=4)
-                if (
-                    product["Cat"] == category and
-                    product["FileFrmtInfo"]["FileType"].lower() == fileType.lower() and
-                    osCode.upper() in map(str.upper, product["AppOses"]) and
-                    re.match(rePattern,str(product["DriverName"])) != None
-                ):
-                    self.output("Found a matching product: {}".format(product["DriverName"]), verbose_level=2)
-                    selected_products.append(product)
-                else:
-                    self.output("File does not match",verbose_level=4)
-            
+                if product["Cat"] != category:
+                    self.output("Category does not match.",verbose_level=4)
+                    continue
+                
+                if product["FileFrmtInfo"]["FileType"].lower() != fileType.lower():
+                    self.output("File Type does not match.",verbose_level=4)
+                    continue
+
+                if (osCode.upper() in map(str.upper, product["AppOses"])) == False:
+                    self.output("OS does not match.", verbose_level=4)
+                    continue
+
+                if re.match(rePattern,str(product["DriverName"])) == None:
+                    self.output("Driver Name does not match the supplied RegEx pattern.", verbose_level=4)
+                    continue
+                
+                self.output("Found a matching product: {}".format(product["DriverName"]), verbose_level=2)
+                selected_products.append(product)
 
             self.output("{} products found.".format(len(selected_products)), verbose_level=2)
             asdfasdf
