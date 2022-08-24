@@ -83,7 +83,7 @@ class DellSoftwareUrlProvider(URLGetter):
     description = "Provides a download url and file metadata for Dell software packages."
     input_variables = {
         "OS_CODE": {
-            "required": True,
+            "required": False,
             "default": "WT64A",
             "description": "The OS Code to download the package for."
         },
