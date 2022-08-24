@@ -200,17 +200,18 @@ class DellSoftwareUrlProvider(URLGetter):
             softwares = json.loads(blob)
             self.output("Retrieved {} packages for Dell product with code: {}".format(len(softwares["DriverListData"]),softwares["ProductCode"]),verbose_level=3)
         # Select array item by product name
+            selected_products = []
             for product in softwares["DriverListData"]:
-                self.output("Desired Type: {}\t\tFound Type:{}".format(fileType,product["Type"]),verbose_level=3)
+                self.output("Desired Type: {}\t\tFound Type:{}".format(fileType,product["Type"]),verbose_level=4)
                 if (
                     product["FileFrmtInfo"]["FileType"] == fileType and
                     2 == 2
                 ):
-                    selected_product = product
+                    selected_product += product
                     continue
                 else:
-                    self.output("File Type does not match")
-
+                    self.output("File Type does not match",verbose_level=4)
+            
             self.output("Selected product {}".format(selected_product["DriverName"]))
             asdfasdf
         # Select Architecture and and Platform
