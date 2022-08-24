@@ -29,6 +29,20 @@
 			<key>Processor</key>
 			<string>com.github.iancohn.SharedProcessors/DellSoftwareUrlProvider</string>
 		</dict>
+		<dict>
+			<key>Processor</key>
+			<string>URLDownloader</string>
+			<key>Arguments</key>
+			<dict>
+				<key>curl_opts</key>
+				<dict/>
+				<key>request_headers</key>
+				<dict>
+					<key>User-Agent</key>
+					<string>Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/104.0.5112.102 Safari/537.36</string>
+				</dict>
+			</dict>
+		</dict>
 	</array>
 </dict>
 </plist>
