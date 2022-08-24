@@ -2,56 +2,33 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
-    <key>Description</key>
-    <string>This recipe downloads Dell SupportAssist</string>
-    <key>Identifier</key>
-    <string>com.github.iancohn.download.DellSupportAssist-Win</string>
-    <key>Input</key>
-    <dict/>
-    <key>MinimumVersion</key>
-    <string>2.0.0</string>
-    <key>Process</key>
-    <array>
-        <dict>
-            <key>Processor</key>
-            <string>URLDownloader</string>
-            <key>Arguments</key>
-            <dict>
-                <key>url</key>
-                <string>https://downloads.dell.com/serviceability/catalog/SupportAssistInstaller.exe</string>
-                 <key>request_headers</key>
-                    <dict>
-                            <key>user-agent</key>
-                            <string>Mozilla/5.0 (Windows NT 6.3; Win64, x64; Trident/7.0; rv:11.0) like Gecko</string>
-                    </dict>
-            </dict>
-        </dict>
-        <dict>
-            <key>Processor</key>
-            <string>URLTextSearcher</string>
-            <key>Arguments</key>
-            <dict>
-                <key>url</key>
-                <string>https://www.dell.com/support/home/en-us/product-support/product/dell-supportassist-pcs-tablets/docs</string>
-                <key>re_pattern</key>
-                <string>supportassist for home pcs version (?P&lt;version&gt;[\d\.]*?)\s</string>
-                <key>re_flags</key>
-                <string>IGNORECASE</string>
-            </dict>
-        </dict>
-        <dict>
-            <key>Processor</key>
-            <string>StopProcessingIf</string>
-            <key>Arguments</key>
-            <dict>
-                <key>predicate</key>
-                <string>VERSION == "" OR VERSION == "None" </string>
-            </dict>
-        </dict>
-        <dict>
-            <key>Processor</key>
-            <string>EndOfCheckPhase</string>
-        </dict>
-    </array>
+	<key>Description</key>
+	<string>Recipe description</string>
+	<key>Identifier</key>
+	<string>com.github.iancohn.download.DellSupportAssist-Win64</string>
+	<key>Input</key>
+	<dict>
+		<key>POPULATE_CVES</key>
+		<true/>
+		<key>OS_CODE</key>
+		<string>WT64A</string>
+		<key>CATEGORY</key>
+		<string>AP</string>
+		<key>FILE_TYPE</key>
+		<string>LWXP</string>
+		<key>DRIVER_NAME_RE_PATTERN</key>
+		<string>SupportAssist</string>
+	</dict>
+	<key>MinimumVersion</key>
+	<string>1.0</string>
+	<key>Process</key>
+	<array>
+		<dict>
+			<key>Arguments</key>
+			<dict/>
+			<key>Processor</key>
+			<string>com.github.iancohn.SharedProcessors/DellSoftwareUrlProvider</string>
+		</dict>
+	</array>
 </dict>
 </plist>

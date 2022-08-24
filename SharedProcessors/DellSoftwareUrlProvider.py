@@ -47,29 +47,28 @@ PRODUCT_FAMILY_OPT = [
     "XPS"
 ]
 CATEGORY_OPT = [
-    "AP", #Application
-    "AU", #Audio
-    "BI", #BIOS
-    "CM", #Modem/Communications
-    "CS", #Chipset
-    "DK", #Docks/Stands
-    "DP", #Dell Data Security
-    "IN", #Mouse, Keyboard & Input Devices
-    "NI", #Network, Ethernet & Wireless
-    "SM", #Systems Management
-    "ST", #Storage
-    "SY", #Security
-    "TDS", #Trusted Device Security
-    "VI" #Video,
-    ""
+    '"AP"  >> #Application',
+    '"AU"  >> #Audio',
+    '"BI"  >> #BIOS',
+    '"CM"  >> #Modem/Communications',
+    '"CS"  >> #Chipset',
+    '"DK"  >> #Docks/Stands',
+    '"DP"  >> #Dell Data Security',
+    '"IN"  >> #Mouse, Keyboard & Input Devices',
+    '"NI"  >> #Network, Ethernet & Wireless',
+    '"SM"  >> #Systems Management',
+    '"ST"  >> #Storage',
+    '"SY"  >> #Security',
+    '"TDS" >> #Trusted Device Security',
+    '"VI"  >> #Video'
 ]
 FILE_TYPE_OPT = [
-    "BEW",  #CPG BIOS Executable for Windows/DOS
-    "CUG",  #A zip file or cab file containing the users guide in HTML
-    "LW64", #Update Package for MS Windows 64-Bit.
-    "LWXP", #Update Package for MS Windows 32-Bit
-    "SAE",  #An application
-    "SEZ"   #Extracts files directly to local disk
+    '"BEW"  >> #CPG BIOS Executable for Windows/DOS'
+    '"CUG"  >> #A zip file or cab file containing the users guide in HTML',
+    '"LW64" >> #Update Package for MS Windows 64-Bit.',
+    '"LWXP" >> #Update Package for MS Windows 32-Bit',
+    '"SAE"  >> #An application',
+    '"SEZ"  >> #Extracts files directly to local disk'
 ]
 
 #Define Defaults
@@ -287,7 +286,7 @@ class DellSoftwareUrlProvider(URLGetter):
             self.env["Importance"] =        software["Imp"] or ""
             self.env["ImportanceId"] =      software["ImpId"] or ""
             self.env["ReleaseDate"] =       software["ReleaseDateValue"] or ""
-            self.env["RequiresRestart"] =   str(bool(software["IsRestart"])) or "false"
+            self.env["RequiresRestart"] =   str(bool(software["IsRestart"])) or "False"
             self.env["DellVersion"] =       software["DellVer"] or ""
             self.env["Version"] =           versionString or ""
             self.env["VersionFriendly"] =   versionFriendly or ""
