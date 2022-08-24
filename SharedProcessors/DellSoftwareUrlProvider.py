@@ -280,7 +280,7 @@ class DellSoftwareUrlProvider(URLGetter):
             self.env["DriverName"] = software["DriverName"] or ""
             self.env["Type"] = software["Type"] or ""
             self.env["TypeName"] = software["TypeName"] or ""
-            self.env["Importance"] = software["Importance"] or ""
+            self.env["Importance"] = software["Imp"] or ""
             self.env["ImportanceId"] = software["ImpId"] or ""
             self.env["ReleaseDate"] = software["ReleaseDateValue"] or ""
             self.env["RequiresRestart"] =software["IsRestart"] or ""
