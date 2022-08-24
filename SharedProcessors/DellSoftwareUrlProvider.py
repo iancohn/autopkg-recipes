@@ -207,8 +207,9 @@ class DellSoftwareUrlProvider(URLGetter):
                     self.output("Category does not match.",verbose_level=4)
                     continue
 
-                if (osCode.upper() in map(str.upper, product["AppOses"])) == False:
+                if (osCode.upper() in map(str.upper, product["AppOses"])) != True:
                     self.output("OS does not match.", verbose_level=4)
+                    
                     continue
 
                 if re.match(rePattern,str(product["DriverName"])) == None:
