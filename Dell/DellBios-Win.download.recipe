@@ -32,8 +32,6 @@
 			<string>URLDownloader</string>
 			<key>Arguments</key>
 			<dict>
-				<key>download_url</key>
-				<string>%url%</string>
 				<key>curl_opts</key>
 				<dict/>
 				<key>request_headers</key>
