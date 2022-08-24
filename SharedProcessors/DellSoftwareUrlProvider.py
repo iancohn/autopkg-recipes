@@ -200,13 +200,6 @@ class DellSoftwareUrlProvider(URLGetter):
             selected_products = []
             for product in softwares["DriverListData"]:
                 self.output("Desired Type: {}\t\tFound Type:{}".format(fileType,product["Type"]),verbose_level=4)
-                """
-                DEFAULT_OS = "WT64A" osCode
-                DEFAULT_CAT = "BI" category
-                DEFAULT_FILE_TYPE = "BEW" fileType
-                DEFAULT_RE = ".*" rePattern
-                """
-                
                 if (
                     product["FileFrmtInfo"]["FileType"] == fileType and
                     product["FileFrmtInfo"]["Cat"] == category and
