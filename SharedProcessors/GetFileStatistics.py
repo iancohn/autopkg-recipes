@@ -113,8 +113,8 @@ class GetFileStatistics(Processor):
                     with open(filePath, 'rb') as fileBlob:
                         buffer = fileBlob.read(blockSize)
                         while len(buffer) > 0:
-                            hash.update(fileBlob)
-                            
+                            hash.update(buffer)
+                            buffer = fileBlob.read(blockSize)
                     self.env[alg + '_result'] = hash.hexdigest()
                     del hash
                 else:
