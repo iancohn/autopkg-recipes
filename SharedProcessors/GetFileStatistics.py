@@ -71,7 +71,8 @@ class GetFileStatistics(Processor):
         'sha384_result':{"description": "Results for this algorithm."},
         'blake2b_result':{"description": "Results for this algorithm."},
         'md5_result':{"description": "Results for this algorithm."},
-        'sha224_result':{"description": "Results for this algorithm."}
+        'sha224_result':{"description": "Results for this algorithm."},
+        'file_size': {"description": "The size of the file."}
     }
 
     __doc__ = description
