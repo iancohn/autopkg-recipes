@@ -15,21 +15,21 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+#Factored for Python 3
+from __future__ import absolute_import
+
 import hashlib
 import time
 
 from autopkglib import Processor, ProcessorError, URLGetter
 from os import path
 
-#Factored for Python 3
-from __future__ import absolute_import
-
 __all__ = ["VirusTotalAnalyzerV3"]
 
 VT_API_V3_BASE_URL = 'https://www.virustotal.com/api/v3'
 DEFAULT_PAUSE_INTERVAL = 15 #Virus Total default rate limits at 4 requests per minute.
 
-class VirusTotalAnalyzerV3(URLGetter):
+class VirusTotalAnalyzerV3(Processor):
 	description = "Returns the size and shas of the indicated file"
 
 	input_variables = {
@@ -38,11 +38,6 @@ class VirusTotalAnalyzerV3(URLGetter):
             "description": "The path to the file you wish to submit.",
 			"default": "%pathname%"
         },
-		"download_dictionary_path": {
-			"required": False,
-			"description": "The path to a file containing jsonized data on the file.",
-			"default": "%pathname%.info.json"
-		},
 		"max_report_age_days": {
 			"required": False,
 			"description": (
@@ -69,6 +64,8 @@ class VirusTotalAnalyzerV3(URLGetter):
 		self.output('API Key retrieved.', verbose_level=3)
 	else:
 		raise ProcessorError("API Key not found. Cannot continue.")
+	if path.exists(downloadDictPath) == False:
+		self.output("Download Dictionary does not exist. Hashes will be computed.")
 
 	try:
 		# Check file size, get submission url
@@ -87,6 +84,7 @@ class VirusTotalAnalyzerV3(URLGetter):
 
 		# 
 		self.download(driverSearchUrl, text=True, headers=headers)
+
 
 	except Exception as e:
 		raise e
