@@ -28,7 +28,7 @@ __all__ = ["VirusTotalAnalyzerV3"]
 VT_API_V3_BASE_URL = 'https://www.virustotal.com/api/v3'
 DEFAULT_PAUSE_INTERVAL = 15 #Virus Total default rate limits at 4 requests per minute.
 
-class VirusTotalAnalyzerV3(Processor):
+class VirusTotalAnalyzerV3(URLDownloader):
 	description = "Returns the size and shas of the indicated file"
 
 	input_variables = {
