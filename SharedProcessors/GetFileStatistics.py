@@ -89,6 +89,7 @@ class GetFileStatistics(Processor):
             }
             for alg in shaAlgorithms:
                 if alg in SHA_ALGORITM_OPT:
+                    self.output("Hashing Algorithm: {}".format(alg), verbose_level=2)
                     hash = algorithmOptions[alg]()
                     hash.update(fileBlob)
                     self.env[alg + '_result'] = hash.hexdigest()
