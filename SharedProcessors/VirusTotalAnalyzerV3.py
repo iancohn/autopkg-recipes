@@ -17,12 +17,14 @@
 
 #Factored for Python 3
 from __future__ import absolute_import
+from autopkglib import Processor, ProcessorError#, URLGetter
+from os import path
 
 import hashlib
 import time
 
-from autopkglib import Processor, ProcessorError, URLGetter
-from os import path
+
+
 
 __all__ = ["VirusTotalAnalyzerV3"]
 
