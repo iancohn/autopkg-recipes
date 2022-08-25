@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/python
 #
 # Copyright 2022 Ian Cohn 
 # https://www.github.com/iancohn
@@ -22,9 +22,6 @@ from os import path
 
 import hashlib
 import time
-
-
-
 
 __all__ = ["VirusTotalAnalyzerV3"]
 
@@ -90,9 +87,6 @@ class VirusTotalAnalyzerV3(Processor):
 
 	except Exception as e:
 		raise e
-
-	
-
 
 if __name__ == "__main__":
     PROCESSOR = VirusTotalAnalyzerV3()
