@@ -85,6 +85,7 @@ class GetFileStatistics(Processor):
             hashAlgorithms = self.env.get("hash_algorithms", self.input_variables["hash_algorithms"]["default"])
         
         filePath = self.env.get("file_path", self.env.get("pathname"))
+        self.output("Iterating over algorithms: {}".format(hashAlgorithms), verbose_level=2)
 
         try:
             self.env['file_size'] = path.getsize(filePath)
