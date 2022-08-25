@@ -1,4 +1,4 @@
-#!/usr/local/autopkg/python
+#!/usr/bin/env python
 #
 # Copyright 2022 Ian Cohn 
 # https://www.github.com/iancohn
