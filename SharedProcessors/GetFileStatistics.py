@@ -78,7 +78,7 @@ class GetFileStatistics(Processor):
     __doc__ = description
 
     def main(self):
-        chunkSize = int(65536)
+        blockSize = int(65536)
         if '*' in (self.env.get("hash_algorithms") or []):
             hashAlgorithms = SHA_ALGORITM_OPT
         else:
@@ -89,7 +89,6 @@ class GetFileStatistics(Processor):
 
         try:
             self.env['file_size'] = path.getsize(filePath)
-            fileBlob = open(filePath, 'rb').read(chunkSize)
             algorithmOptions = {
                 'shake_256': hashlib.shake_256,
                 'sha3_384': hashlib.sha3_384,
@@ -106,11 +105,16 @@ class GetFileStatistics(Processor):
                 'md5': hashlib.md5,
                 'sha224': hashlib.sha224
             }
+
             for alg in hashAlgorithms:
                 if alg in SHA_ALGORITM_OPT:
                     self.output("Hashing Algorithm: {}".format(alg), verbose_level=2)
                     hash = algorithmOptions[alg]()
-                    hash.update(fileBlob)
+                    with open(filePath, 'rb') as fileBlob:
+                        buffer = fileBlob.read(blockSize)
+                        while len(buffer) > 0:
+                            hash.update(fileBlob)
+                            
                     self.env[alg + '_result'] = hash.hexdigest()
                     del hash
                 else:
