@@ -48,7 +48,7 @@ class GetFileStatistics(Processor):
             "required": False,
             "description": "Defaults to %pathname%."
         },
-        "sha_algorithms": {
+        "hash_algorithms": {
             "required": False,
             "default": ["sha1", "sha256", "md5"],
             "description": (
@@ -79,7 +79,7 @@ class GetFileStatistics(Processor):
 
     def main(self):
         chunkSize = int(65536)
-        shaAlgorithms = self.env.get("sha_algorithms", self.input_variables["sha_algorithms"]["default"])
+        hashAlgorithms = self.env.get("hash_algorithms", self.input_variables["hash_algorithms"]["default"])
         filePath = self.env.get("file_path", self.env.get("pathname"))
 
         try:
@@ -101,7 +101,7 @@ class GetFileStatistics(Processor):
                 'md5': hashlib.md5,
                 'sha224': hashlib.sha224
             }
-            for alg in shaAlgorithms:
+            for alg in hashAlgorithms:
                 if alg in SHA_ALGORITM_OPT:
                     self.output("Hashing Algorithm: {}".format(alg), verbose_level=2)
                     hash = algorithmOptions[alg]()
