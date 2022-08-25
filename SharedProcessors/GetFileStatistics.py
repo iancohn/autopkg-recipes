@@ -115,6 +115,7 @@ class GetFileStatistics(Processor):
                         while len(buffer) > 0:
                             hash.update(buffer)
                             buffer = fileBlob.read(blockSize)
+                            
                     self.env[alg + '_result'] = hash.hexdigest()
                     del hash
                 else:
