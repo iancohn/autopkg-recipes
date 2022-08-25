@@ -53,7 +53,7 @@ class VirusTotalAnalyzerV3(URLDownloader):
 		}
     }
 	output_variables = {
-		"json"
+		"json": {"description": "json data"}
 	}
 
 	__doc__ = description
