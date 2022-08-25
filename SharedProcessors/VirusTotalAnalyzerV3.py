@@ -54,39 +54,39 @@ class VirusTotalAnalyzerV3(Processor):
 	output_variables = {}
 
 	__doc__ = description
-	
-	# Set Variables
-	apiKey = self.env.get("VIRUSTOTAL_API_KEY")
-	downloadDictPath = self.env.get("pathname") + ".info.json"
-	filePath = self.env.get("file_path", self.env.get("pathname"))
-	if apiKey > '':
-		self.output('API Key retrieved.', verbose_level=3)
-	else:
-		raise ProcessorError("API Key not found. Cannot continue.")
-	if path.exists(downloadDictPath) == False:
-		self.output("Download Dictionary does not exist. Hashes will be computed.")
-
-	try:
-		# Check file size, get submission url
-		fileSize = int(path.getsize(filePath))
-		if fileSize < 33554432:
-			self.output("File size is less than 32MB, using default file submission endpoint", verbose_level=2)
-			submissionUrl = VT_API_V3_BASE_URL + "/files"
-		elif fileSize < 524288000:
-			self.output("File size is greater than ")
-			submissionUrl = self.download()
+	def main(self):
+		# Set Variables
+		apiKey = self.env.get("VIRUSTOTAL_API_KEY")
+		downloadDictPath = self.env.get("pathname") + ".info.json"
+		filePath = self.env.get("file_path", self.env.get("pathname"))
+		if apiKey > '':
+			self.output('API Key retrieved.', verbose_level=3)
 		else:
-			raise ProcessorError(
-				"File size is too large for Virus Total. If this is a compressed archive, "
-				"consider submitting enclosed files individually."
-			)
+			raise ProcessorError("API Key not found. Cannot continue.")
+		if path.exists(downloadDictPath) == False:
+			self.output("Download Dictionary does not exist. Hashes will be computed.")
 
-		# 
-		self.download(driverSearchUrl, text=True, headers=headers)
+		try:
+			# Check file size, get submission url
+			fileSize = int(path.getsize(filePath))
+			if fileSize < 33554432:
+				self.output("File size is less than 32MB, using default file submission endpoint", verbose_level=2)
+				submissionUrl = VT_API_V3_BASE_URL + "/files"
+			elif fileSize < 524288000:
+				self.output("File size is greater than ")
+				submissionUrl = self.download()
+			else:
+				raise ProcessorError(
+					"File size is too large for Virus Total. If this is a compressed archive, "
+					"consider submitting enclosed files individually."
+				)
+
+			# 
+			self.download(driverSearchUrl, text=True, headers=headers)
 
 
-	except Exception as e:
-		raise e
+		except Exception as e:
+			raise e
 
 if __name__ == "__main__":
     PROCESSOR = VirusTotalAnalyzerV3()
