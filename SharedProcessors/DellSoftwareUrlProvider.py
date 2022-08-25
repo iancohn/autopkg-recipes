@@ -24,7 +24,7 @@ import re
 
 DELL_BASE_URL = "https://www.dell.com/support/driver/en-us/ips/api/driverlist/fetchdriversbyproduct?"
 DELL_DETAILS_BASE_URL = "https://www.dell.com/support/home/en-us/drivers/driversdetails?driverid="
-# productcode=precision-17-7760-laptop
+# productcode=optiplex-5000-desktop
 # &oscode=WT64A
 # X-Requested-With : XMLHttpRequest
 # CVE\-\d{4}\-\d{4}
