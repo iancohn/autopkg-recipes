@@ -19,6 +19,7 @@
 from __future__ import absolute_import
 from autopkglib import Processor, ProcessorError,URLDownloader #, URLGetter
 from os import path
+from urllib.parse import urlparse
 
 import hashlib
 import time
@@ -51,7 +52,9 @@ class VirusTotalAnalyzerV3(URLDownloader):
 			"default": DEFAULT_PAUSE_INTERVAL
 		}
     }
-	output_variables = {}
+	output_variables = {
+		"json"
+	}
 
 	__doc__ = description
 	def main(self):
@@ -82,7 +85,21 @@ class VirusTotalAnalyzerV3(URLDownloader):
 				)
 
 			# 
-			self.download(driverSearchUrl, text=True, headers=headers)
+			curl_cmd = (
+				self.curl_binary(),
+				"--url",
+				submissionUrl,
+				"-H",
+				"X-apikey: {}".format(apiKey),
+				"-H",
+				"Accept: application/json",
+				"-H",
+				"Content-Type: multipart/form-data",
+				"--form",
+				"file=@{}".format(filePath)
+			)
+			response = self.download_with_curl(curl_cmd)
+			self["json"] = response
 
 
 		except Exception as e:
