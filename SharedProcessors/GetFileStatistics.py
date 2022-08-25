@@ -18,7 +18,7 @@
 #Factored for Python 3
 from __future__ import absolute_import
 from autopkglib import Processor, ProcessorError, URLGetter
-from os import getsize
+from os import path
 import hashlib
 
 
@@ -69,7 +69,7 @@ class GetFileStatistics(Processor):
         filePath = self.env.get("file_path", self.env.get("pathname"))
 
         try:
-            self.env['file_size'] = getsize(filePath)
+            self.env['file_size'] = path.getsize(filePath)
             fileBlob = open(filePath, 'rb').read(chunkSize)
             algorithmOptions = {
                 'shake_256': hashlib.shake_256,
