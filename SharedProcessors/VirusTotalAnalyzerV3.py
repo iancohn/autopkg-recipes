@@ -53,7 +53,9 @@ class VirusTotalAnalyzerV3(URLDownloader):
 		}
     }
 	output_variables = {
-		"json": {"description": "json data"}
+		"json": {
+			"description": "json data"
+		}
 	}
 
 	__doc__ = description
@@ -99,7 +101,7 @@ class VirusTotalAnalyzerV3(URLDownloader):
 				"file=@{}".format(filePath)
 			)
 			response = self.download_with_curl(curl_cmd)
-			self["json"] = response
+			self.env["json"] = response
 
 
 		except Exception as e:
