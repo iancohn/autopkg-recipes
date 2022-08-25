@@ -57,8 +57,8 @@ class VirusTotalAnalyzerV3(Processor):
 	def main(self):
 		# Set Variables
 		apiKey = self.env.get("VIRUSTOTAL_API_KEY")
-		downloadDictPath = self.env.get("pathname") + ".info.json"
-		filePath = self.env.get("file_path", self.env.get("pathname"))
+		filePath = "/Users/icc/Library/AutoPkg/Cache/com.github.iancohn.download.DellSupportAssist-Win64/downloads/Dell-SupportAssist-OS-Recovery-Plugin-for-Dell-Update_RH18Y_WIN_5.5.1.16143_A00.EXE"#self.env.get("file_path", self.env.get("pathname"))
+		downloadDictPath = filePath + ".info.json"
 		if apiKey > '':
 			self.output('API Key retrieved.', verbose_level=3)
 		else:
