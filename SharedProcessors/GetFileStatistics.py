@@ -45,7 +45,7 @@ class GetFileStatistics(Processor):
     description = "Returns the size and shas of the indicated file"
     input_variables = {
         "file_path": {
-            "required": True,
+            "required": False,
             "description": "Defaults to %pathname%."
         },
         "sha_algorithms": {
@@ -58,7 +58,7 @@ class GetFileStatistics(Processor):
         }
     }
     output_variables = {
-        "DriverId": {"description": "The unique identifier assigned to the product by Dell."}
+        
     }
 
     __doc__ = description
