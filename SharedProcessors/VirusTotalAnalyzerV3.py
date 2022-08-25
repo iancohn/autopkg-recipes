@@ -17,7 +17,7 @@
 
 #Factored for Python 3
 from __future__ import absolute_import
-from autopkglib import Processor, ProcessorError#, URLGetter
+from autopkglib import Processor, ProcessorError,URLDownloader #, URLGetter
 from os import path
 
 import hashlib
