@@ -58,7 +58,20 @@ class GetFileStatistics(Processor):
         }
     }
     output_variables = {
-        
+        'shake_256_result':{"description": "Results for this algorithm."},
+        'sha3_384_result':{"description": "Results for this algorithm."},
+        'sha512_result':{"description": "Results for this algorithm."},
+        'blake2s_result':{"description": "Results for this algorithm."},
+        'sha1_result':{"description": "Results for this algorithm."},
+        'sha3_512_result':{"description": "Results for this algorithm."},
+        'shake_128_result':{"description": "Results for this algorithm."},
+        'sha3_224_result':{"description": "Results for this algorithm."},
+        'sha256_result':{"description": "Results for this algorithm."},
+        'sha3_256_result':{"description": "Results for this algorithm."},
+        'sha384_result':{"description": "Results for this algorithm."},
+        'blake2b_result':{"description": "Results for this algorithm."},
+        'md5_result':{"description": "Results for this algorithm."},
+        'sha224_result':{"description": "Results for this algorithm."}
     }
 
     __doc__ = description
