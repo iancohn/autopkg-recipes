@@ -52,7 +52,7 @@ class GetFileStatistics(Processor):
             "required": False,
             "default": ["sha1", "sha256", "md5"],
             "description": (
-                "An array of strings representing hashing algorithms to return"
+                "An array of strings representing hashing algorithms to return. Enter '*' to return ALL algorithms."
                 "Options: {}".format(SHA_ALGORITM_OPT)
             )
         }
@@ -79,7 +79,11 @@ class GetFileStatistics(Processor):
 
     def main(self):
         chunkSize = int(65536)
-        hashAlgorithms = self.env.get("hash_algorithms", self.input_variables["hash_algorithms"]["default"])
+        if '*' in self.env.get("hash_algorithms", []):
+            hashAlgorithms = SHA_ALGORITM_OPT
+        else:
+            hashAlgorithms = self.env.get("hash_algorithms", self.input_variables["hash_algorithms"]["default"])
+        
         filePath = self.env.get("file_path", self.env.get("pathname"))
 
         try:
