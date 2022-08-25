@@ -25,12 +25,13 @@ import hashlib
 __all__ = ["GetFileStatistics"]
 
 SHA_ALGORITM_OPT = [
+#	'shake_256',
     'sha3_384',
     'sha512',
     'blake2s',
     'sha1',
     'sha3_512',
-    'shake_128',
+#    'shake_128',
     'sha3_224',
     'sha256',
     'sha3_256',
