@@ -25,7 +25,6 @@ import hashlib
 __all__ = ["GetFileStatistics"]
 
 SHA_ALGORITM_OPT = [
-	'shake_256',
     'sha3_384',
     'sha512',
     'blake2s',
