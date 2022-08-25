@@ -79,7 +79,7 @@ class GetFileStatistics(Processor):
 
     def main(self):
         chunkSize = int(65536)
-        if '*' in self.env.get("hash_algorithms", []):
+        if '*' in (self.env.get("hash_algorithms") or []):
             hashAlgorithms = SHA_ALGORITM_OPT
         else:
             hashAlgorithms = self.env.get("hash_algorithms", self.input_variables["hash_algorithms"]["default"])
