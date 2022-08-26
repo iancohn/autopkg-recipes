@@ -155,13 +155,13 @@ class VirusTotalAnalyzerV3(URLDownloader):
 				"# Results = 1: {}\tTooOld: {}".
 				format(
 					(len(jsonResponse["data"]) == 1),
-					(jsonResponse["data"][0]["attributes"]["last_analysis_date"] > minTimeEpoch)
+					(jsonResponse["data"][0]["attributes"]["last_analysis_date"] < minTimeEpoch)
 				),
 				verbose_level=3
 			)
 
 			if len(jsonResponse["data"]) != 1 or \
-			((jsonResponse["data"][0]["attributes"]["last_analysis_date"] < minTimeEpoch) == False):
+			((jsonResponse["data"][0]["attributes"]["last_analysis_date"] < minTimeEpoch)):
 			# Submit File
 				self.output("File does not exist in Virus Total, or there are ambiguous results. Beginning upload process now.", verbose_level=1)
 				fileSize = int(path.getsize(filePath))
@@ -227,7 +227,7 @@ class VirusTotalAnalyzerV3(URLDownloader):
 				)
 				status = 'in progress'
 
-				while ((maxRetry == 0) or (attempts > 0)) and \
+				while ((maxRetry == 0) or (attempts > 0)) or \
 				(status != 'completed'):
 					self.output("Pausing to avoid rate limiting.", verbose_level=3)
 					time.sleep(pauseInterval)
