@@ -132,7 +132,7 @@ class VirusTotalAnalyzerV3(URLDownloader):
 		try:
 		# Search for sha
 			searchUrl = VT_API_V3_BASE_URL + "search?query={}".format(sha)
-			curl_cmd = self.prepare_curl_cmd(
+			curl_cmd = (
 				self.curl_binary(),
 				"--url",
 				searchUrl,
@@ -146,6 +146,7 @@ class VirusTotalAnalyzerV3(URLDownloader):
 				#"file=@{}".format(filePath)
 			)
 			queryResponse = self.download_with_curl(curl_cmd)
+			self.output(queryResponse)
 			jsonResponse = json.loads(queryResponse)
 
 		# If not exists or last scan is too old
@@ -173,7 +174,7 @@ class VirusTotalAnalyzerV3(URLDownloader):
 						"consider submitting enclosed files individually."
 					)
 				if submissionUrl == None:
-					curlSubmissionUrl = self.prepare_curl_cmd(
+					curlSubmissionUrl = (
 						self.curl_binary(),
 						"--url",
 						VT_API_V3_BASE_URL + '/files/upload_url',
@@ -187,7 +188,7 @@ class VirusTotalAnalyzerV3(URLDownloader):
 					jsUrl = json.loads(submissionUrlResponse)
 					submissionUrl = jsUrl["data"]
 
-				curlSubmitFile = self.prepare_curl_cmd(
+				curlSubmitFile = (
 					self.curl_binary(),
 					"--url",
 					submissionUrl,
@@ -205,7 +206,7 @@ class VirusTotalAnalyzerV3(URLDownloader):
 				analysisId = jsAnalysis["data"]["id"]
 			# Wait on file up to the max number of retries, return report.
 				attempts = maxRetry
-				curlCheckAnalysis = self.prepare_curl_cmd(
+				curlCheckAnalysis = (
 					self.curl_binary(),
 					"--url",
 					(VT_API_V3_BASE_URL + "/analyses/" + analysisId),
@@ -230,7 +231,7 @@ class VirusTotalAnalyzerV3(URLDownloader):
 			# Return results
 				detailsUrl = jsStatus["data"]["links"]["item"]
 			
-				curlDetails = self.prepare_curl_cmd(
+				curlDetails = (
 					self.curl_binary(),
 					"--url",
 					detailsUrl,
