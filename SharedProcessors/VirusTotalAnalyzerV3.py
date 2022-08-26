@@ -17,18 +17,20 @@
 
 #Factored for Python 3
 from __future__ import absolute_import
+from sys import int_info
 from autopkglib import Processor, ProcessorError,URLDownloader #, URLGetter
 from os import path
 from urllib.parse import urlparse
 
-import hashlib
+from hashlib import md5
 import time
+import json
 
 __all__ = ["VirusTotalAnalyzerV3"]
 
 VT_API_V3_BASE_URL = 'https://www.virustotal.com/api/v3'
 DEFAULT_PAUSE_INTERVAL = 15 #Virus Total default rate limits at 4 requests per minute.
-
+DEFAULT_MAX_ATTEMPTS = 5
 class VirusTotalAnalyzerV3(URLDownloader):
 	description = "Returns the size and shas of the indicated file"
 
@@ -50,6 +52,11 @@ class VirusTotalAnalyzerV3(URLDownloader):
 			"required": False,
 			"description": "Number of seconds to wait between requests to the Virus Total api to avoid rate limiting.",
 			"default": DEFAULT_PAUSE_INTERVAL
+		},
+		"max_retry_attempts": {
+			"required": False,
+			"description": "Number of times to attempt to retrieve Virus Total analysis results. Enter 0 to retry indefinitely.",
+			"default": DEFAULT_MAX_ATTEMPTS
 		}
     }
 	output_variables = {
@@ -59,21 +66,67 @@ class VirusTotalAnalyzerV3(URLDownloader):
 	}
 
 	__doc__ = description
+
+	def get_pause_interval(self) -> int:
+		try:
+			s = self.env.get["pause_interval", self["input_variables"]["pause_interval"]["default"]]
+			interval = int(s)
+		except:
+			interval = DEFAULT_PAUSE_INTERVAL
+		finally:
+			return interval
+
+	def calculate_md5(self, filePath:str) -> str:
+		if (path.exists(filePath) and path.isfile(filePath)) == False:
+			raise ProcessorError("File ({}) does not exist".format(filePath))
+
+		downloadDictionaryPath = filePath + ".info.json"
+		
+		try:			
+			downloadInfo = json.load(open(downloadDictionaryPath))
+			md5 = downloadInfo["file_md5"]
+			self.output("Retrieved MD5: {}".format(md5), verbose_level=3)
+		except:
+			self.output("Calculating the md5 sum.", verbose_level=3)
+			blockSize = int(65536)
+			hasher = md5()
+			with open(filePath, 'rb') as fileBlob:
+				buffer = fileBlob.read(blockSize)
+				while len(buffer) > 0:
+					hasher.update(buffer)
+					buffer = fileBlob.read(blockSize)
+
+			md5 = hasher.hexdigest()
+			self.output("Calculated MD5: {}".format(md5),verbose_level=3)
+		finally:
+			return md5
+
 	def main(self):
 		# Set Variables
 		apiKey = self.env.get("VIRUSTOTAL_API_KEY")
+		pauseInterval = self.get_pause_interval()
 		filePath = "/Users/icc/Library/AutoPkg/Cache/com.github.iancohn.download.DellSupportAssist-Win64/downloads/Dell-SupportAssist-OS-Recovery-Plugin-for-Dell-Update_RH18Y_WIN_5.5.1.16143_A00.EXE"#self.env.get("file_path", self.env.get("pathname"))
-		downloadDictPath = filePath + ".info.json"
+		md5 = self.calculate_md5(filePath)
+
 		if apiKey > '':
 			self.output('API Key retrieved.', verbose_level=3)
 		else:
 			raise ProcessorError("API Key not found. Cannot continue.")
-		if path.exists(downloadDictPath) == False:
-			self.output("Download Dictionary does not exist. Hashes will be computed.")
 
 		try:
+			# Search for md5
+
+			# If not exists or last scan is too old, submit file
+
+				# Wait on file up to the max number of retries, return report.
+				
+				# Return results
+
+			# Else return results
+
 			# Check file size, get submission url
 			fileSize = int(path.getsize(filePath))
+
 			if fileSize < 33554432:
 				self.output("File size is less than 32MB, using default file submission endpoint", verbose_level=2)
 				submissionUrl = VT_API_V3_BASE_URL + "/files"
@@ -100,7 +153,9 @@ class VirusTotalAnalyzerV3(URLDownloader):
 				"--form",
 				"file=@{}".format(filePath)
 			)
-			response = self.download_with_curl(curl_cmd)
+			analysis = self.download_with_curl(curl_cmd)
+			time.sleep(pauseInterval)
+			
 			self.env["json"] = response
 
 
