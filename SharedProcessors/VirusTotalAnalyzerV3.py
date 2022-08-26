@@ -17,6 +17,7 @@
 
 #Factored for Python 3
 from __future__ import absolute_import
+from bdb import Breakpoint
 from sys import int_info
 from autopkglib import Processor, ProcessorError,URLDownloader #, URLGetter
 from os import path
@@ -62,7 +63,8 @@ class VirusTotalAnalyzerV3(URLDownloader):
 	output_variables = {
 		"json": {
 			"description": "json data"
-		}
+		},
+		"myVar": {"description": "myVar"}
 	}
 
 	__doc__ = description
@@ -79,27 +81,19 @@ class VirusTotalAnalyzerV3(URLDownloader):
 	def calculate_md5(self, filePath:str) -> str:
 		if (path.exists(filePath) and path.isfile(filePath)) == False:
 			raise ProcessorError("File ({}) does not exist".format(filePath))
-
-		downloadDictionaryPath = filePath + ".info.json"
-		
-		try:			
-			downloadInfo = json.load(open(downloadDictionaryPath))
-			md5 = downloadInfo["file_md5"]
-			self.output("Retrieved MD5: {}".format(md5), verbose_level=3)
-		except:
-			self.output("Calculating the md5 sum.", verbose_level=3)
-			blockSize = int(65536)
-			hasher = md5()
-			with open(filePath, 'rb') as fileBlob:
+	
+		self.output("Calculating the md5 sum.", verbose_level=3)
+		blockSize = int(65536)
+		hasher = md5()
+		with open(filePath, 'rb') as fileBlob:
+			buffer = fileBlob.read(blockSize)
+			while len(buffer) > 0:
+				hasher.update(buffer)
 				buffer = fileBlob.read(blockSize)
-				while len(buffer) > 0:
-					hasher.update(buffer)
-					buffer = fileBlob.read(blockSize)
 
-			md5 = hasher.hexdigest()
-			self.output("Calculated MD5: {}".format(md5),verbose_level=3)
-		finally:
-			return md5
+		md5 = hasher.hexdigest()
+		self.output("Calculated MD5: {}".format(md5),verbose_level=3)
+		return md5
 
 	def main(self):
 		# Set Variables
@@ -107,6 +101,8 @@ class VirusTotalAnalyzerV3(URLDownloader):
 		pauseInterval = self.get_pause_interval()
 		filePath = "/Users/icc/Library/AutoPkg/Cache/com.github.iancohn.download.DellSupportAssist-Win64/downloads/Dell-SupportAssist-OS-Recovery-Plugin-for-Dell-Update_RH18Y_WIN_5.5.1.16143_A00.EXE"#self.env.get("file_path", self.env.get("pathname"))
 		md5 = self.calculate_md5(filePath)
+		self.env["myVar"] = md5
+		return
 
 		if apiKey > '':
 			self.output('API Key retrieved.', verbose_level=3)
