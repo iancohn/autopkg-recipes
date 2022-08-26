@@ -149,7 +149,7 @@ class VirusTotalAnalyzerV3(URLDownloader):
 			jsonResponse = json.loads(queryResponse)
 
 		# If not exists or last scan is too old
-			if len(queryResponse["data"]) != 1 or \
+			if len(jsonResponse["data"]) != 1 or \
 			((queryResponse["data"]["attributes"]["date"] < minTimeEpoch) == False):
 			# Submit File
 				self.output("File does not exist in Virus Total, or there are ambiguous results. Beginning upload process now.", verbose_level=1)
