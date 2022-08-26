@@ -145,6 +145,7 @@ class VirusTotalAnalyzerV3(URLDownloader):
 				#"--form",
 				#"file=@{}".format(filePath)
 			)
+			self.output(curl_cmd)
 			queryResponse = self.download_with_curl(curl_cmd)
 			self.output(queryResponse)
 			jsonResponse = json.loads(queryResponse)
