@@ -64,6 +64,7 @@ class VirusTotalAnalyzerV3(URLDownloader):
 	output_variables = {
 		"vt_type_description": {"description": "Returned from Virus Total"},
 		"vt_creation_date": {"description": "Returned from Virus Total"},
+		"vt_reputation": {"description": "The reputation of the file according to Virus Total."},
 		"vt_signature_product": {"description": "Returned from Virus Total"},
 		"vt_signature_verified": {"description": "Returned from Virus Total"},
 		"vt_signature_description": {"description": "Returned from Virus Total"},
