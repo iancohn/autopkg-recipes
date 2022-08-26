@@ -117,9 +117,9 @@ class VirusTotalAnalyzerV3(URLDownloader):
 		# Set Variables
 		apiKey = self.env.get("VIRUSTOTAL_API_KEY")
 		pauseInterval = self.get_pause_interval()
-		maxRetry = 3 #int(self.env.get("max_retry_attempts"), self["input_variables"]["max_retry_attempts"]["default"])
-		maxAgeDays = 1 #int(self.env.get("max_report_age_days"), self["input_variables"]["max_report_age_days"]["default"])
-		filePath = "/Users/icc/Library/AutoPkg/Cache/com.github.iancohn.download.DellSupportAssist-Win64/downloads/Dell-SupportAssist-OS-Recovery-Plugin-for-Dell-Update_RH18Y_WIN_5.5.1.16143_A00.EXE"#self.env.get("file_path", self.env.get("pathname"))
+		maxRetry = int(self.env.get("max_retry_attempts"), self["input_variables"]["max_retry_attempts"]["default"])
+		maxAgeDays = int(self.env.get("max_report_age_days"), self["input_variables"]["max_report_age_days"]["default"])
+		filePath = self.env.get("file_path", self.env.get("pathname"))
 
 		sha = self.calculate_sha256(filePath)
 		minTimeEpoch = self.get_min_scan_date(maxAgeDays)
@@ -139,11 +139,7 @@ class VirusTotalAnalyzerV3(URLDownloader):
 				"-H",
 				"X-apikey: {}".format(apiKey),
 				"-H",
-				"Accept: application/json"#,
-				#"-H",
-				#"Content-Type: multipart/form-data",
-				#"--form",
-				#"file=@{}".format(filePath)
+				"Accept: application/json"
 			)
 			queryResponse = self.download_with_curl(curl_cmd)
 			jsonResponse = json.loads(queryResponse)
