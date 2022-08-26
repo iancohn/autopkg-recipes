@@ -131,7 +131,7 @@ class VirusTotalAnalyzerV3(URLDownloader):
 
 		try:
 		# Search for sha
-			searchUrl = VT_API_V3_BASE_URL + "search?query={}".format(sha)
+			searchUrl = VT_API_V3_BASE_URL + "/search?query={}".format(sha)
 			curl_cmd = (
 				self.curl_binary(),
 				"--url",
