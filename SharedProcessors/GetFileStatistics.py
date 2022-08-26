@@ -17,7 +17,7 @@
 
 #Factored for Python 3
 from __future__ import absolute_import
-from autopkglib import Processor, ProcessorError, URLGetter
+from autopkglib import Processor, ProcessorError
 from os import path
 import hashlib
 
@@ -115,7 +115,7 @@ class GetFileStatistics(Processor):
                         while len(buffer) > 0:
                             hash.update(buffer)
                             buffer = fileBlob.read(blockSize)
-                            
+
                     self.env[alg + '_result'] = hash.hexdigest()
                     del hash
                 else:
