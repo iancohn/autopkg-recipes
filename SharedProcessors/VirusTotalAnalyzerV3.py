@@ -32,6 +32,7 @@ __all__ = ["VirusTotalAnalyzerV3"]
 VT_API_V3_BASE_URL = 'https://www.virustotal.com/api/v3'
 DEFAULT_PAUSE_INTERVAL = 15 #Virus Total default rate limits at 4 requests per minute.
 DEFAULT_MAX_ATTEMPTS = 5
+DEFAULT_MAX_REPORT_AGE = 7
 class VirusTotalAnalyzerV3(URLDownloader):
 	description = "Returns the size and shas of the indicated file"
 
@@ -47,7 +48,8 @@ class VirusTotalAnalyzerV3(URLDownloader):
 				"Int representing the maximum age in days of the available report in VirusTotal. "
 				"If the existing report is older than this value, the file/url will be rescanned. "
 				"A value of 0 will effectively force a rescan."
-			)
+			),
+			"default": str(DEFAULT_MAX_REPORT_AGE)
 		},
 		"pause_interval": {
 			"required": False,
