@@ -154,7 +154,7 @@ class VirusTotalAnalyzerV3(URLDownloader):
 			self.output(
 				"# Results = 1: {}\tTooOld: {}".
 				format(
-					len((jsonResponse["data"]) == 1),
+					(len(jsonResponse["data"]) == 1),
 					(jsonResponse["data"][0]["attributes"]["last_analysis_date"] > minTimeEpoch)
 				),
 				verbose_level=3
@@ -257,6 +257,7 @@ class VirusTotalAnalyzerV3(URLDownloader):
 
 		# Else return results
 			else:
+				self.output("Current Report is new enough. Using data.", verbose_level=2)
 				data = jsonResponse["data"][0]
 
 
