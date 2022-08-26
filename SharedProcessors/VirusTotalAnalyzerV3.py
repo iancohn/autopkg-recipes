@@ -23,7 +23,7 @@ from autopkglib import Processor, ProcessorError,URLDownloader #, URLGetter
 from os import path
 from urllib.parse import urlparse
 
-from hashlib import md5
+import hashlib
 import time
 import json
 
@@ -84,7 +84,7 @@ class VirusTotalAnalyzerV3(URLDownloader):
 	
 		self.output("Calculating the md5 sum.", verbose_level=3)
 		blockSize = int(65536)
-		hasher = md5()
+		hasher = hashlib.md5()
 		with open(filePath, 'rb') as fileBlob:
 			buffer = fileBlob.read(blockSize)
 			while len(buffer) > 0:
