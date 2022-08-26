@@ -250,8 +250,8 @@ class VirusTotalAnalyzerV3(URLDownloader):
 
 			signInfo = data["attributes"]["signature_info"]
 			signersDetails = signInfo["signers details"][0]
-			self.env["vt_type_description"] = jsDetails["data"]["attributes"]["type_description"]
-			self.env["vt_creation_date"] = jsDetails["data"]["attributes"]["creation_date"]
+			self.env["vt_type_description"] = data["attributes"]["type_description"]
+			self.env["vt_creation_date"] = data["attributes"]["creation_date"]
 			self.env["vt_signature_product"] = signInfo["product"]
 			self.env["vt_signature_verified"] = signInfo["verified"]
 			self.env["vt_signature_description"] = signInfo["description"]
