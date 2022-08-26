@@ -245,7 +245,7 @@ class VirusTotalAnalyzerV3(URLDownloader):
 
 		# Else return results
 			else:
-				data = jsonResponse["data"]
+				data = jsonResponse["data"][0]
 
 
 			signInfo = data["attributes"]["signature_info"]
