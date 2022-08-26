@@ -150,8 +150,10 @@ class VirusTotalAnalyzerV3(URLDownloader):
 
 		# If not exists or last scan is too old
 			if len(jsonResponse["data"]) != 1 or \
-			((int(jsonResponse["data"][0]["attributes"]["last_analysis_date"]) < minTimeEpoch) == False):
+			((int(jsonResponse["data"]["attributes"]["last_analysis_date"]) < minTimeEpoch) == False):
 			# Submit File
+				self.output("# responses: {}".format(len(jsonResponse["data"])), verbose_level=3)
+				self.output("MinAge: {}\t\tAnalysisDate: {}".format(minTimeEpoch, jsonResponse["data"]["attributes"]["last_analysis_date"]), verbose_level=3)
 				self.output("File does not exist in Virus Total, or there are ambiguous results. Beginning upload process now.", verbose_level=1)
 				fileSize = int(path.getsize(filePath))
 
@@ -214,6 +216,7 @@ class VirusTotalAnalyzerV3(URLDownloader):
 					"-H",
 					"Accept: application/json"
 				)
+				status = 'in progress'
 
 				while ((maxRetry == 0) or (attempts > 0)) and \
 				(status != 'completed'):
