@@ -93,7 +93,7 @@ class VirusTotalAnalyzerV3(URLDownloader):
 		if (path.exists(filePath) and path.isfile(filePath)) == False:
 			raise ProcessorError("File ({}) does not exist".format(filePath))
 	
-		self.output("Calculating the md5 sum.", verbose_level=3)
+		self.output("Calculating the sha256.", verbose_level=3)
 		blockSize = int(65536)
 		hasher = hashlib.sha256()
 		with open(filePath, 'rb') as fileBlob:
@@ -103,7 +103,7 @@ class VirusTotalAnalyzerV3(URLDownloader):
 				buffer = fileBlob.read(blockSize)
 
 		sha256 = hasher.hexdigest()
-		self.output("Calculated MD5: {}".format(sha256),verbose_level=3)
+		self.output("Calculated SHA256: {}".format(sha256),verbose_level=3)
 		return sha256
 
 	def get_min_scan_date(self,maxReportAge:int) -> int:
@@ -132,7 +132,7 @@ class VirusTotalAnalyzerV3(URLDownloader):
 		try:
 		# Search for sha
 			searchUrl = VT_API_V3_BASE_URL + "search?query={}".format(sha)
-			curl_cmd = (
+			curl_cmd = self.prepare_curl_cmd(
 				self.curl_binary(),
 				"--url",
 				searchUrl,
@@ -173,7 +173,7 @@ class VirusTotalAnalyzerV3(URLDownloader):
 						"consider submitting enclosed files individually."
 					)
 				if submissionUrl == None:
-					curlSubmissionUrl = (
+					curlSubmissionUrl = self.prepare_curl_cmd(
 						self.curl_binary(),
 						"--url",
 						VT_API_V3_BASE_URL + '/files/upload_url',
@@ -187,7 +187,7 @@ class VirusTotalAnalyzerV3(URLDownloader):
 					jsUrl = json.loads(submissionUrlResponse)
 					submissionUrl = jsUrl["data"]
 
-				curlSubmitFile = (
+				curlSubmitFile = self.prepare_curl_cmd(
 					self.curl_binary(),
 					"--url",
 					submissionUrl,
@@ -205,7 +205,7 @@ class VirusTotalAnalyzerV3(URLDownloader):
 				analysisId = jsAnalysis["data"]["id"]
 			# Wait on file up to the max number of retries, return report.
 				attempts = maxRetry
-				curlCheckAnalysis = (
+				curlCheckAnalysis = self.prepare_curl_cmd(
 					self.curl_binary(),
 					"--url",
 					(VT_API_V3_BASE_URL + "/analyses/" + analysisId),
@@ -230,7 +230,7 @@ class VirusTotalAnalyzerV3(URLDownloader):
 			# Return results
 				detailsUrl = jsStatus["data"]["links"]["item"]
 			
-				curlDetails = (
+				curlDetails = self.prepare_curl_cmd(
 					self.curl_binary(),
 					"--url",
 					detailsUrl,
