@@ -124,7 +124,7 @@ class VirusTotalAnalyzerV3(URLDownloader):
 		pauseInterval = self.get_pause_interval()
 		maxRetry = int(self.env.get("max_retry_attempts", self.input_variables["max_retry_attempts"]["default"]))
 		maxAgeDays = int(self.env.get("max_report_age_days", self.input_variables["max_report_age_days"]["default"]))
-		filePath = self.env.get("file_path", self.env.get("pathname"))
+		filePath = self.env.get("file_path", self.env["pathname"])
 
 		sha = self.calculate_sha256(filePath)
 		minTimeEpoch = self.get_min_scan_date(maxAgeDays)
