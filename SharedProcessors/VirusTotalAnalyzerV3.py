@@ -39,8 +39,7 @@ class VirusTotalAnalyzerV3(URLDownloader):
 	input_variables = {
         "file_path": {
             "required": False,
-            "description": "The path to the file you wish to submit.",
-			"default": "%pathname%"
+            "description": "The path to the file you wish to submit. Defaults to %pathname%"
         },
 		"max_report_age_days": {
 			"required": False,
