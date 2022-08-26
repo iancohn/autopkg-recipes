@@ -52,12 +52,12 @@ class VirusTotalAnalyzerV3(URLDownloader):
 		"pause_interval": {
 			"required": False,
 			"description": "Number of seconds to wait between requests to the Virus Total api to avoid rate limiting.",
-			"default": DEFAULT_PAUSE_INTERVAL
+			"default": str(DEFAULT_PAUSE_INTERVAL)
 		},
 		"max_retry_attempts": {
 			"required": False,
 			"description": "Number of times to attempt to retrieve Virus Total analysis results. Enter 0 to retry indefinitely.",
-			"default": DEFAULT_MAX_ATTEMPTS
+			"default": str(DEFAULT_MAX_ATTEMPTS)
 		}
     }
 	output_variables = {
@@ -106,7 +106,10 @@ class VirusTotalAnalyzerV3(URLDownloader):
 		self.output("Calculated SHA256: {}".format(sha256),verbose_level=3)
 		return sha256
 
-	def get_min_scan_date(self,maxReportAge:int) -> int:
+	def get_min_scan_date(self,maxReportAge:int=None) -> int:
+		if maxReportAge == None:
+			sMaxAge = 0
+		
 		sMaxAge = maxReportAge*24*60*60
 		nowEpoch = int(time.mktime(time.gmtime()))
 		maxAgeEpoch = nowEpoch - sMaxAge
