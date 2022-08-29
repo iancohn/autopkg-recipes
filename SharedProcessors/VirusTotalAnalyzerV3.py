@@ -119,6 +119,8 @@ class VirusTotalAnalyzerV3(URLDownloader):
 					namesMatch = False
 				currentCertIndex += 1
 			
+			self.output("Signature on product matches expected authority names: {}".format(namesMatch), verbose_level=2)
+
 			return namesMatch
 
 	def get_pause_interval(self) -> int:
