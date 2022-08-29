@@ -69,7 +69,22 @@ class VirusTotalAnalyzerV3(URLDownloader):
 		},
 		"code_sign_verification_config": {
 			"required": False,
-			"description": "A nested dictionary of the configuration to use to validate the signature on the provided upload."
+			"description": (
+				"A nested dictionary of the configuration to use to validate "
+				"the signature on the provided upload. Example value:"
+				"""
+<key>code_signing_checks</key>
+<dict>
+	<key>expected_authority_names</key>
+	<array>
+		<string>Dell Inc</string>
+		<string>Entrust Code Signing CA - OVCS2</string>
+		<string>Entrust Code Signing Root Certification Authority - CSBR1</string>
+		<string>Entrust.net</string>
+	</array>
+</dict>
+"""
+			)
 		}
     }
 	output_variables = {
