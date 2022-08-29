@@ -16,6 +16,8 @@
 		<string>5090</string>
 		<key>FILE_TYPE</key>
 		<string>BEW</string>
+		<key>CONTINUE_ON_CODESIGN_FAIL</key>
+		<false/>
 	</dict>
 	<key>MinimumVersion</key>
 	<string>1.0</string>
