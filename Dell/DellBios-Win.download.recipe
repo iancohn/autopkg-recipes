@@ -17,7 +17,7 @@
 		<key>FILE_TYPE</key>
 		<string>BEW</string>
 		<key>CONTINUE_ON_CODESIGN_FAIL</key>
-		<false/>
+		<string>True</string>
 	</dict>
 	<key>MinimumVersion</key>
 	<string>1.0</string>
