@@ -173,7 +173,8 @@ class DellSoftwareUrlProvider(URLGetter):
         "FileFormatName": {"description": "The format of the file."},
         "FileSize": {"description": "The size of the file in bytes."},
         "ConvertedFileSize": {"description": "The size of the file as the largest, easily readable size."},
-        "CVE": {"description": "A comma separated list of CVEs addressed by the retrieved software, as listed by Dell."}
+        "CVE": {"description": "A comma separated list of CVEs addressed by the retrieved software, as listed by Dell."},
+        "DetailsUrl": {"description": "A url leading to the details page for the retrieved driver."}
     }
 
     __doc__ = description
@@ -300,6 +301,7 @@ class DellSoftwareUrlProvider(URLGetter):
             self.env["FileSize"] =          software["FileFrmtInfo"]["FileSize"] or ""
             self.env["ConvertedFileSize"] = software["FileFrmtInfo"]["ConvertedFileSize"] or ""
             self.env["CVE"] =               cves or ""
+            self.env["details_url"] =       detailsUrl or ""
 
         except Exception as e:
             self.output("Unexpected JSON encountered.")
