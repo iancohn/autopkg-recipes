@@ -50,6 +50,8 @@
 			<dict>
 				<key>code_sign_verification_config</key>
 				<dict>
+					<key>continue_on_failure</key>
+					<string>%CONTINUE_ON_CODESIGN_FAIL%</string>
 					<key>code_signing_checks</key>
 					<dict>
 						<key>expected_authority_names</key>
