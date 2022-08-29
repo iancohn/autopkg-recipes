@@ -17,11 +17,12 @@
 
 #Factored for Python 3
 from __future__ import absolute_import
-from bdb import Breakpoint
+from array import array
 from sys import int_info
 from autopkglib import Processor, ProcessorError,URLDownloader #, URLGetter
 from os import path
-from urllib.parse import urlparse
+from operator import itemgetter
+
 
 import hashlib
 import time
@@ -33,8 +34,14 @@ VT_API_V3_BASE_URL = 'https://www.virustotal.com/api/v3'
 DEFAULT_PAUSE_INTERVAL = 15 #Virus Total default rate limits at 4 requests per minute.
 DEFAULT_MAX_ATTEMPTS = 5
 DEFAULT_MAX_REPORT_AGE = 7
+DEFAULT_CODE_SIGN_VERIFICATION_CONFIG = {
+	"code_signing_checks": {
+		"expected_authority_names": []
+	},
+	"continue_on_failure": False
+}
 class VirusTotalAnalyzerV3(URLDownloader):
-	description = "Returns the size and shas of the indicated file"
+	description = "Checks Virus Total for an analysis of the file; optionally checks the signing; submits the file as needed. Uses Virus Total API V3."
 
 	input_variables = {
         "file_path": {
@@ -59,9 +66,14 @@ class VirusTotalAnalyzerV3(URLDownloader):
 			"required": False,
 			"description": "Number of times to attempt to retrieve Virus Total analysis results. Enter 0 to retry indefinitely.",
 			"default": str(DEFAULT_MAX_ATTEMPTS)
+		},
+		"code_sign_verification_config": {
+			"required": False,
+			"description": "A nested dictionary of the configuration to use to validate the signature on the provided upload."
 		}
     }
 	output_variables = {
+		"code_sign_validation_passed": {"description": "Whether or not the file indicated conforms to the provided code signature configuration."},
 		"vt_type_description": {"description": "Returned from Virus Total"},
 		"vt_creation_date": {"description": "Returned from Virus Total"},
 		"vt_reputation": {"description": "The reputation of the file according to Virus Total."},
@@ -81,6 +93,32 @@ class VirusTotalAnalyzerV3(URLDownloader):
 	}
 
 	__doc__ = description
+
+	def check_expected_authority_names(self,authorityNameReference:list, signatureAuthorityNames:list) -> bool:
+		self.output("Checking signature authority names.", verbose_level=2)
+		if len(authorityNameReference) != len(signatureAuthorityNames):
+			self.output("The number of provided authority names does not match the number of authority names detected on the file.", verbose_level=3)
+			return False
+		
+		else:
+			namesMatch = True
+			nCertIndexes = len(authorityNameReference) - 1
+			self.output("Checking each item in the expected authority name list.", verbose_level=3)
+			while namesMatch and currentCertIndex <= nCertIndexes:
+				self.output(
+					"Index: {}\tExpected Authority Name: {}\tActualAuthorityName: {}".
+					format(
+						currentCertIndex,
+						authorityNameReference[currentCertIndex],
+						signatureAuthorityNames[currentCertIndex]
+					), 
+					verbose_level=3
+				)
+				if authorityNameReference[currentCertIndex] != signatureAuthorityNames[currentCertIndex]:
+					namesMatch = False
+				currentCertIndex += 1
+			
+			return namesMatch
 
 	def get_pause_interval(self) -> int:
 		try:
@@ -125,6 +163,7 @@ class VirusTotalAnalyzerV3(URLDownloader):
 		maxRetry = int(self.env.get("max_retry_attempts", self.input_variables["max_retry_attempts"]["default"]))
 		maxAgeDays = int(self.env.get("max_report_age_days", self.input_variables["max_report_age_days"]["default"]))
 		filePath = self.env.get("file_path", self.env.get("pathname"))
+		codeSignConfig = self.env.get("code_sign_verification_config", DEFAULT_CODE_SIGN_VERIFICATION_CONFIG)
 
 		sha = self.calculate_sha256(filePath)
 		minTimeEpoch = self.get_min_scan_date(maxAgeDays)
@@ -261,9 +300,10 @@ class VirusTotalAnalyzerV3(URLDownloader):
 				self.output("Current Report is new enough. Using data.", verbose_level=2)
 				data = jsonResponse["data"][0]
 
-
 			signInfo = data["attributes"]["signature_info"]
-			signersDetails = signInfo["signers details"][0]
+			signersDetails = signInfo["signers details"]
+			immediateSigner = signersDetails[0]
+
 			self.env["vt_type_description"] = data["attributes"]["type_description"]
 			self.env["vt_creation_date"] = data["attributes"]["creation_date"]
 			self.env["vt_reputation"] = data["attributes"]["reputation"]
@@ -271,18 +311,47 @@ class VirusTotalAnalyzerV3(URLDownloader):
 			self.env["vt_signature_verified"] = signInfo["verified"]
 			self.env["vt_signature_description"] = signInfo["description"]
 			self.env["vt_signature_date"] = signInfo["signing date"]
-			self.env["vt_signature_status"] = signersDetails["status"]
-			self.env["vt_signature_valid_usage"] = signersDetails["valid usage"]
-			self.env["vt_signature_name"] = signersDetails["name"]
-			self.env["vt_signature_algorithm"] = signersDetails["algorithm"]
-			self.env["vt_signature_valid_from"] = signersDetails["valid from"]
-			self.env["vt_signature_valid_to"] = signersDetails["valid to"]
-			self.env["vt_signature_serial_number"] = signersDetails["serial number"]
-			self.env["vt_signature_cert_issuer"] = signersDetails["cert issuer"]
-			self.env["vt_signature_thumbprint"] = signersDetails["thumbprint"]
+
+			self.env["vt_signature_status"] = immediateSigner["status"]
+			self.env["vt_signature_valid_usage"] = immediateSigner["valid usage"]
+			self.env["vt_signature_name"] = immediateSigner["name"]
+			self.env["vt_signature_algorithm"] = immediateSigner["algorithm"]
+			self.env["vt_signature_valid_from"] = immediateSigner["valid from"]
+			self.env["vt_signature_valid_to"] = immediateSigner["valid to"]
+			self.env["vt_signature_serial_number"] = immediateSigner["serial number"]
+			self.env["vt_signature_cert_issuer"] = immediateSigner["cert issuer"]
+			self.env["vt_signature_thumbprint"] = immediateSigner["thumbprint"]
+
+		# Code signature verification
+			allChecks = {}
+			if len(codeSignConfig["code_signing_checks"]) > 0:
+				self.output("Validating provided code signing checks.", verbose_level=2)
+				checks = list(codeSignConfig["code_signing_checks"].keys())
+				codeSignVerificationFailed = False
+				for check in checks:
+					self.output("Evaluating check ({}).".format(check), verbose_level=2)
+					if check == "expected_authority_names":
+						authorityNames = list(map(itemgetter('name'), signersDetails))
+						allChecks[check] = self.check_expected_authority_names(codeSignConfig["code_signing_checks"]["expected_authority_names"], authorityNames)
+						if allChecks[check] == False:
+							codeSignVerificationFailed = True
+
+					elif 1 == 0: #Additional check types
+						self.output("Place holder for additional check types.")
+					else: 
+						raise ProcessorError("Error: check ({}) not defined.".format(check))
+
+				if codeSignVerificationFailed and (codeSignConfig["continue_on_failure"] == False):
+					raise ProcessorError("Code signature verification failed.")
+			else:
+				self.output("No code signing checks configured.")
+			
 
 		except Exception as e:
 			raise e
+		
+		finally:
+			self.output("Process complete.")
 		
 
 if __name__ == "__main__":
