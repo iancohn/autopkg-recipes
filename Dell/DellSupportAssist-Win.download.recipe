@@ -16,6 +16,8 @@
 		<string>LWXP</string>
 		<key>DRIVER_NAME_RE_PATTERN</key>
 		<string>SupportAssist</string>
+		<key>POPULATE_CVES</key>
+		<true/>
 	</dict>
 	<key>MinimumVersion</key>
 	<string>1.0</string>

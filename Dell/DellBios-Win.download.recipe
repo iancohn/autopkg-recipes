@@ -41,6 +41,26 @@
 				</dict>
 			</dict>
 		</dict>
+		<dict>
+			<key>Processor</key>
+			<string>com.github.iancohn.SharedProcessors/VirusTotalAnalyzerV3</string>
+			<key>Arguments</key>
+			<dict>
+				<key>code_sign_verification_config</key>
+				<dict>
+					<key>code_signing_checks</key>
+					<dict>
+						<key>expected_authority_names</key>
+						<array>
+							<string>Dell Inc</string>
+							<string>Entrust Code Signing CA - OVCS2</string>
+							<string>Entrust Code Signing Root Certification Authority - CSBR1</string>
+							<string>Entrust.net</string>
+						</array>
+					</dict>
+				</dict>
+			</dict>
+		</dict>
 	</array>
 </dict>
 </plist>
