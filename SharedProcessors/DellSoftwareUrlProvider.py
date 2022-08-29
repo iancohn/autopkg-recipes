@@ -187,10 +187,11 @@ class DellSoftwareUrlProvider(URLGetter):
         family = self.env.get("FAMILY", self.input_variables["FAMILY"]["default"])
         model = self.env.get("MODEL", self.input_variables["MODEL"]["default"])
         formFactor = self.env.get("FORM_FACTOR", self.input_variables["FORM_FACTOR"]["default"])
-        productCode = self.env.get(
-            "PRODUCT_CODE_OVERRIDE",
-            "{}-{}-{}".format(family,model,formFactor)
-        )
+        if self.env.get("PRODUCT_CODE_OVERRIDE") > "":
+            productCode = self.env.get("PRODUCT_CODE_OVERRIDE")
+        else:
+            productCode = "{}-{}-{}".format(family,model,formFactor)
+
         category = self.env.get("CATEGORY", self.input_variables["CATEGORY"]["default"])
         fileType = self.env.get("FILE_TYPE", self.input_variables["FILE_TYPE"]["default"])
         nameRePattern = self.env.get("DRIVER_NAME_RE_PATTERN", self.input_variables["DRIVER_NAME_RE_PATTERN"]["default"])
