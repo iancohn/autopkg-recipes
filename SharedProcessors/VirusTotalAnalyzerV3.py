@@ -104,6 +104,7 @@ class VirusTotalAnalyzerV3(URLDownloader):
 			namesMatch = True
 			nCertIndexes = len(authorityNameReference) - 1
 			self.output("Checking each item in the expected authority name list.", verbose_level=3)
+			currentCertIndex = 0
 			while namesMatch and currentCertIndex <= nCertIndexes:
 				self.output(
 					"Index: {}\tExpected Authority Name: {}\tActualAuthorityName: {}".
