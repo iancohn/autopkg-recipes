@@ -15,7 +15,7 @@
 		<key>FILE_TYPE</key>
 		<string>LWXP</string>
 		<key>DRIVER_NAME_RE_PATTERN</key>
-		<string>SupportAssist</string>
+		<string>SupportAssist\ OS Recovery Plugin</string>
 		<key>POPULATE_CVES</key>
 		<true/>
 	</dict>
