@@ -256,12 +256,12 @@ class VirusTotalAnalyzerV3(URLDownloader):
 					submissionUrlResponse = self.download_with_curl(curlSubmissionUrl)
 					jsUrl = json.loads(submissionUrlResponse)
 					submissionUrl = jsUrl["data"]
-					self.output("Retrieved a file upload url: {}".format(submissionUrl),verbose_level=2)
+					self.output("Retrieved a file upload url: {}".format(submissionUrl),verbose_level=3)
 
 				curlSubmitFile = (
 					self.curl_binary(),
 					"--url",
-					submissionUrl,
+					"{}".format(submissionUrl),
 					"-H",
 					"X-apikey: {}".format(apiKey),
 					"-H",
@@ -271,6 +271,7 @@ class VirusTotalAnalyzerV3(URLDownloader):
 					"--form",
 					"file=@{}".format(filePath)
 				)
+				self.output("Submiting file.", verbose_level=2)
 				analysisResponse = self.download_with_curl(curlSubmitFile)
 				jsAnalysis = json.loads(analysisResponse)
 				analysisId = jsAnalysis["data"]["id"]
