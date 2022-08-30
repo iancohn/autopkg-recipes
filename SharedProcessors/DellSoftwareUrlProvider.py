@@ -154,6 +154,10 @@ class DellSoftwareUrlProvider(URLGetter):
     
     }
     output_variables = {
+        "ProductFamily": {"description":"Self described."},
+        "ProductModel": {"description":"Self described."},
+        "FormFactor": {"description":"The form factor of the product"},
+        "ProductCode": {"description":"The Dell product code targeted by the software."},
         "DriverId": {"description": "The unique identifier assigned to the product by Dell."},
         "DriverName": {"description": "The friendly name of the driver."},
         "Type": {"description": "The driver type."},
@@ -301,7 +305,11 @@ class DellSoftwareUrlProvider(URLGetter):
             self.env["FileSize"] =          software["FileFrmtInfo"]["FileSize"] or ""
             self.env["ConvertedFileSize"] = software["FileFrmtInfo"]["ConvertedFileSize"] or ""
             self.env["CVE"] =               cves or ""
-            self.env["details_url"] =       detailsUrl or ""
+            self.env["DetailsUrl"] =        detailsUrl or ""
+            self.env["ProductFamily"] =     family or ""
+            self.env["ProductModel"] =      model or ""
+            self.env["FormFactor"] =        formFactor or ""
+            self.env["ProductCode"] =       productCode or ""
 
         except Exception as e:
             self.output("Unexpected JSON encountered.")
