@@ -201,7 +201,7 @@ class DellSoftwareUrlProvider(URLGetter):
         fileType = self.env.get("FILE_TYPE", self.input_variables["FILE_TYPE"]["default"])
         nameRePattern = self.env.get("DRIVER_NAME_RE_PATTERN", self.input_variables["DRIVER_NAME_RE_PATTERN"]["default"])
         fileNameRePattern = self.env.get("DRIVER_FILE_NAME_RE_PATTERN", self.input_variables["DRIVER_FILE_NAME_RE_PATTERN"]["default"])
-        baseUrl = self.env.get("DELL_BASE_URL",DELL_BASE_URL)
+        baseUrl = self.env.get("DELL_BASE_URL", DELL_BASE_URL)
 
         self.output("Constructing URL", verbose_level=3)
         driverSearchUrl = (
