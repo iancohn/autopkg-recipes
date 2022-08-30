@@ -5,7 +5,7 @@
 	<key>Description</key>
 	<string>Recipe description</string>
 	<key>Identifier</key>
-	<string>com.github.iancohn.download.DellSupportAssist-Win64</string>
+	<string>com.github.iancohn.download.DellSupportAssistPlugin-Win64</string>
 	<key>Input</key>
 	<dict>
 		<key>OS_CODE</key>
