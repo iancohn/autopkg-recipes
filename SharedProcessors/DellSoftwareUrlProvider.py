@@ -192,7 +192,7 @@ class DellSoftwareUrlProvider(URLGetter):
         family = self.env.get("FAMILY", self.input_variables["FAMILY"]["default"])
         model = self.env.get("MODEL", self.input_variables["MODEL"]["default"])
         formFactor = self.env.get("FORM_FACTOR", self.input_variables["FORM_FACTOR"]["default"])
-        if self.env.get("PRODUCT_CODE_OVERRIDE") > "":
+        if (self.env.get("PRODUCT_CODE_OVERRIDE") or "") > "":
             productCode = self.env.get("PRODUCT_CODE_OVERRIDE")
         else:
             productCode = "{}-{}-{}".format(family,model,formFactor)
