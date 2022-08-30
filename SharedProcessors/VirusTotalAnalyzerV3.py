@@ -288,18 +288,17 @@ class VirusTotalAnalyzerV3(URLDownloader):
 				)
 				status = 'in progress'
 
-				while ((maxRetry == 0) or (attempts > 0)) or \
-				(status != 'completed'):
+				while (maxRetry == 0) or ((attempts > 0) and (status != 'completed')):
 					self.output("Pausing to avoid rate limiting.", verbose_level=3)
 					time.sleep(pauseInterval)
-					self.output("Checking Virus Total analysis status. Attemp {}.".format(attempts), verbose_level=3)
+					self.output("Checking Virus Total analysis status. Attempt {}.".format(attempts), verbose_level=3)
 					analysis = self.download_with_curl(curlCheckAnalysis)
 					jsStatus = json.loads(analysis)
 					del analysis
 					status = jsStatus["data"]["attributes"]["status"]
+					self.output("Current Analysis Status: {}".format(status),verbose_level=3)
 					attempts -= 1
 
-				self.output("Analysis status: {}".format(status))
 			# Return results
 				detailsUrl = jsStatus["data"]["links"]["item"]
 			
