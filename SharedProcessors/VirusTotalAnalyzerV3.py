@@ -223,7 +223,7 @@ class VirusTotalAnalyzerV3(URLDownloader):
 			# Submit File
 				self.output("File does not exist in Virus Total, or there are ambiguous results. Beginning upload process now.", verbose_level=1)
 				fileSize = int(path.getsize(filePath))
-
+				submissionUrl = None
 				if fileSize < 33554432:
 					self.output("File size is less than 32MB, using default file submission endpoint", verbose_level=2)
 					submissionUrl = VT_API_V3_BASE_URL + "/files"
@@ -241,6 +241,7 @@ class VirusTotalAnalyzerV3(URLDownloader):
 						"File size is too large for Virus Total. If this is a compressed archive, "
 						"consider submitting enclosed files individually."
 					)
+				
 				if submissionUrl == None:
 					curlSubmissionUrl = (
 						self.curl_binary(),
@@ -255,6 +256,7 @@ class VirusTotalAnalyzerV3(URLDownloader):
 					submissionUrlResponse = self.download_with_curl(curlSubmissionUrl)
 					jsUrl = json.loads(submissionUrlResponse)
 					submissionUrl = jsUrl["data"]
+					self.output("Retrieved a file upload url: {}".format(submissionUrl),verbose_level=2)
 
 				curlSubmitFile = (
 					self.curl_binary(),
