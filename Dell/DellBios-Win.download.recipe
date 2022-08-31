@@ -8,16 +8,16 @@
 	<string>com.github.iancohn.download.DellBios-Win</string>
 	<key>Input</key>
 	<dict>
-		<key>POPULATE_CVES</key>
-		<true/>
 		<key>FAMILY</key>
 		<string>Optiplex</string>
 		<key>MODEL</key>
 		<string>5090</string>
-		<key>FILE_TYPE</key>
-		<string>BEW</string>
+		<key>FORM_FACTOR</key>
+		<string>Desktop</string>
 		<key>CONTINUE_ON_CODESIGN_FAIL</key>
-		<string>True</string>
+		<string>False</string>
+		<key>PRODUCT_CODE_OVERRIDE</key>
+		<string/>
 	</dict>
 	<key>MinimumVersion</key>
 	<string>1.0</string>
@@ -26,6 +26,15 @@
 		<dict>
 			<key>Processor</key>
 			<string>com.github.iancohn.SharedProcessors/DellSoftwareUrlProvider</string>
+			<key>Arguments</key>
+			<dict>
+				<key>FILE_TYPE</key>
+				<string>BEW</string>
+				<key>OS_CODE</key>
+				<string>BIOSA</string>
+				<key>POPULATE_CVES</key>
+				<true/>
+			</dict>
 		</dict>
 		<dict>
 			<key>Processor</key>
