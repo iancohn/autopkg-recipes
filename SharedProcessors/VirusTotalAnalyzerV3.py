@@ -328,7 +328,11 @@ class VirusTotalAnalyzerV3(URLDownloader):
 			self.env["vt_type_description"] = data["attributes"]["type_description"]
 			self.env["vt_creation_date"] = data["attributes"]["creation_date"]
 			self.env["vt_reputation"] = data["attributes"]["reputation"]
-			self.env["vt_signature_product"] = signInfo["product"]
+			# product is not always present in the signature info key returned by
+			# virus total. Coalesce it here.
+			if "product" in signInfo:
+				self.env["vt_signature_product"] = signInfo["product"]
+			
 			self.env["vt_signature_verified"] = signInfo["verified"]
 			self.env["vt_signature_description"] = signInfo["description"]
 			self.env["vt_signature_date"] = signInfo["signing date"]
