@@ -278,8 +278,8 @@ class DellSoftwareUrlProvider(URLGetter):
                 )
                 detailsBlob = self.download(detailsUrl,text=True)
                 cveMatches = re.findall(r'CVE\-\d{4}\-\d*',detailsBlob)
-                self.output("{} CVEs found on Dell's details page for this driver. CVEs: {}".format(len(cveMatches)), verbose_level=3)
                 cves = ",".join(cveMatches)
+                self.output("{} CVEs found on Dell's details page for this driver. CVEs: {}".format(len(cveMatches), cves), verbose_level=3)
             else:
                 self.output("Declinging to search for CVEs mitigated by this package.", verbose_level=3)
                 cves = None
