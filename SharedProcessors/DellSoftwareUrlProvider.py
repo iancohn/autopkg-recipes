@@ -277,11 +277,24 @@ class DellSoftwareUrlProvider(URLGetter):
                     verbose_level=2
                 )
                 detailsBlob = self.download(detailsUrl,text=True)
-                cveMatches = re.findall(r'CVE\-\d{4}\-\d*',detailsBlob)
+                cvePattern = r'CVE\-\d{4}\-\d*'
+                cveMatches = re.findall(cvePattern,detailsBlob,re.IGNORECASE)
+                
+                dsaLinkMatches = re.findall(r'\<a\ href\=\"(?P<url>https:\/\/[\w~_.\/-]+)\"\>', software["BrfDesc"], re.IGNORECASE)
+                if len(dsaLinkMatches) > 0:
+                    self.output("This appears to be a Dell Security Advisory. Searching linked url(s) for linked CVEs.", verbose_level=3)
+                    for dsaUrl in dsaLinkMatches:
+                        self.output("Searching url: {}".format(dsaUrl), verbose_level=2)
+                        dsaBlob = self.download(dsaUrl,text=True)
+                        dsaLinkedCves = re.findall(cvePattern,dsaBlob,re.IGNORECASE)
+                        self.output("{} CVEs found on page.".format(len(dsaLinkedCves)), verbose_level=3)
+                        cveMatches += dsaLinkedCves
+                
                 cves = ",".join(cveMatches)
-                self.output("{} CVEs found on Dell's details page for this driver. CVEs: {}".format(len(cveMatches), cves), verbose_level=3)
+                self.output("{} total linked CVEs found for this package. CVEs: {}".format(len(cveMatches), cves), verbose_level=3)
+
             else:
-                self.output("Declinging to search for CVEs mitigated by this package.", verbose_level=3)
+                self.output("Declining to search for CVEs mitigated by this package.", verbose_level=3)
                 cves = None
 
         # Set output variables
