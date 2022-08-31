@@ -208,15 +208,16 @@ class VirusTotalAnalyzerV3(URLDownloader):
 
 		# If not exists or last scan is too old
 			self.output("# responses: {}".format(len(jsonResponse["data"])), verbose_level=3)
-			self.output("MinAge: {}\t\tAnalysisDate: {}".format(minTimeEpoch, jsonResponse["data"][0]["attributes"]["last_analysis_date"]), verbose_level=3)
-			self.output(
-				"# Results = 1: {}\tTooOld: {}".
-				format(
-					(len(jsonResponse["data"]) == 1),
-					(jsonResponse["data"][0]["attributes"]["last_analysis_date"] < minTimeEpoch)
-				),
-				verbose_level=3
-			)
+			if len(jsonResponse["data"] != 0):
+				self.output("MinAge: {}\t\tAnalysisDate: {}".format(minTimeEpoch, jsonResponse["data"][0]["attributes"]["last_analysis_date"]), verbose_level=3)
+				self.output(
+				"Single result?: {}\tTooOld: {}".
+					format(
+						(len(jsonResponse["data"]) == 1),
+						(jsonResponse["data"][0]["attributes"]["last_analysis_date"] < minTimeEpoch)
+					),
+					verbose_level=3
+				)
 
 			if len(jsonResponse["data"]) != 1 or \
 			((jsonResponse["data"][0]["attributes"]["last_analysis_date"] < minTimeEpoch)):
