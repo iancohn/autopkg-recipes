@@ -349,7 +349,7 @@ class VirusTotalAnalyzerV3(URLDownloader):
 				self.output("The object has not been signed.",verbose_level=3)
 
 			self.env["vt_type_description"] = data["attributes"]["type_description"]
-			self.env["vt_creation_date"] = data["attributes"]["creation_date"]
+			self.env["vt_creation_date"] = data["attributes"].get("creation_date") or ""
 			self.env["vt_reputation"] = data["attributes"]["reputation"]
 
 		# Code signature verification
