@@ -3,19 +3,19 @@
 <plist version="1.0">
 <dict>
 	<key>Description</key>
-	<string>Recipe description</string>
+	<string>This recipe downloads the latest version of Dell Command Update and </string>
 	<key>Identifier</key>
-	<string>com.github.iancohn.download.DellSupportAssistPlugin-Win64</string>
+	<string>com.github.iancohn.download.DellCommandUpdate-Win64</string>
 	<key>Input</key>
 	<dict>
 		<key>OS_CODE</key>
 		<string>WT64A</string>
 		<key>CATEGORY</key>
-		<string>AP</string>
+		<string>SM</string>
 		<key>FILE_TYPE</key>
 		<string>LWXP</string>
 		<key>DRIVER_NAME_RE_PATTERN</key>
-		<string>SupportAssist\ OS\ Recovery\ Plugin</string>
+		<string>Dell\ Command\ \|\ Update\ Application</string>
 		<key>POPULATE_CVES</key>
 		<true/>
 	</dict>
