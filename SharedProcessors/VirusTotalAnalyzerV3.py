@@ -36,7 +36,7 @@ DEFAULT_MAX_ATTEMPTS = 5
 DEFAULT_MAX_REPORT_AGE = 7
 DEFAULT_CODE_SIGN_VERIFICATION_CONFIG = {
 	"code_signing_checks": {
-		"expected_authority_names": []
+		#"expected_authority_names": []
 	},
 	"continue_on_failure": False
 }
