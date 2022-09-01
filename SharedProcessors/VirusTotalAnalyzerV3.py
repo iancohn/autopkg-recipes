@@ -321,33 +321,36 @@ class VirusTotalAnalyzerV3(URLDownloader):
 				self.output("Current Report is new enough. Using data.", verbose_level=2)
 				data = jsonResponse["data"][0]
 
-			signInfo = data["attributes"]["signature_info"]
-			signersDetails = signInfo["signers details"]
-			immediateSigner = signersDetails[0]
+			if "signature_info" in data["attributes"]:
+				self.output("The submitted file has been signed. Getting signature details.", verbose_level=3)
+				signInfo = data["attributes"]["signature_info"]
+				signersDetails = signInfo["signers details"]
+				immediateSigner = signersDetails[0]
+			# certain fields are not always present in the signature info key returned by
+			# virus total. Coalesce it here.
+				if "product" in signInfo:
+					self.env["vt_signature_product"] = signInfo["product"]
+				
+				if "description" in signInfo:
+					self.env["vt_signature_description"] = signInfo["description"]
+					
+				self.env["vt_signature_verified"] = signInfo["verified"]
+				self.env["vt_signature_date"] = signInfo["signing date"]
+				self.env["vt_signature_status"] = immediateSigner["status"]
+				self.env["vt_signature_valid_usage"] = immediateSigner["valid usage"]
+				self.env["vt_signature_name"] = immediateSigner["name"]
+				self.env["vt_signature_algorithm"] = immediateSigner["algorithm"]
+				self.env["vt_signature_valid_from"] = immediateSigner["valid from"]
+				self.env["vt_signature_valid_to"] = immediateSigner["valid to"]
+				self.env["vt_signature_serial_number"] = immediateSigner["serial number"]
+				self.env["vt_signature_cert_issuer"] = immediateSigner["cert issuer"]
+				self.env["vt_signature_thumbprint"] = immediateSigner["thumbprint"]
+			else:
+				self.output("The object has not been signed.",verbose_level=3)
 
 			self.env["vt_type_description"] = data["attributes"]["type_description"]
 			self.env["vt_creation_date"] = data["attributes"]["creation_date"]
 			self.env["vt_reputation"] = data["attributes"]["reputation"]
-			# certain fields are not always present in the signature info key returned by
-			# virus total. Coalesce it here.
-			if "product" in signInfo:
-				self.env["vt_signature_product"] = signInfo["product"]
-			
-			if "description" in signInfo:
-				self.env["vt_signature_description"] = signInfo["description"]
-				#2e84cc53946d42288f7688c67eafd8726c88f98cdb5f2ce5d4a988d3ad7c6365
-
-			self.env["vt_signature_verified"] = signInfo["verified"]
-			self.env["vt_signature_date"] = signInfo["signing date"]
-			self.env["vt_signature_status"] = immediateSigner["status"]
-			self.env["vt_signature_valid_usage"] = immediateSigner["valid usage"]
-			self.env["vt_signature_name"] = immediateSigner["name"]
-			self.env["vt_signature_algorithm"] = immediateSigner["algorithm"]
-			self.env["vt_signature_valid_from"] = immediateSigner["valid from"]
-			self.env["vt_signature_valid_to"] = immediateSigner["valid to"]
-			self.env["vt_signature_serial_number"] = immediateSigner["serial number"]
-			self.env["vt_signature_cert_issuer"] = immediateSigner["cert issuer"]
-			self.env["vt_signature_thumbprint"] = immediateSigner["thumbprint"]
 
 		# Code signature verification
 			allChecks = {}
