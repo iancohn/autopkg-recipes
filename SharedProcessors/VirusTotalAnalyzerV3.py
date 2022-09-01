@@ -356,7 +356,7 @@ class VirusTotalAnalyzerV3(URLDownloader):
 			allChecks = {}
 			if len(codeSignConfig["code_signing_checks"]) > 0:
 				continueOnVerificationFailure:bool = codeSignConfig.get("continue_on_failure") or False
-				self.output("Validating provided code signing checks.", verbose_level=2)
+				self.output("Validating provided {} provided code signing checks.".format(len(codeSignConfig["code_signing_checks"])), verbose_level=2)
 				checks = list(codeSignConfig["code_signing_checks"].keys())
 				codeSignVerificationFailed = False
 				for check in checks:
