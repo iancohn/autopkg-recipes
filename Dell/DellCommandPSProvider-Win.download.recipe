@@ -1,0 +1,193 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>Description</key>
+	<string>This recipe downloads the latest version of PowerShell Provider for Dell Command.</string>
+	<key>Identifier</key>
+	<string>com.github.iancohn.download.DellCommandPSProvider-Win</string>
+	<key>Input</key>
+	<dict>
+		<key>OS_CODE</key>
+		<string>WT64A</string>
+		<key>CATEGORY</key>
+		<string>SM</string>
+		<key>FILE_TYPE</key>
+		<string>SEZ</string>
+		<key>DRIVER_NAME_RE_PATTERN</key>
+		<string>Dell\ Command\ \|\ Power[sS]hell\ Provider</string>
+		<key>POPULATE_CVES</key>
+		<true/>
+		<key>NAME</key>
+		<string>DellCommandPsProvider</string>
+		<key>max_retry_attempts</key>
+		<integer>15</integer>
+	</dict>
+	<key>MinimumVersion</key>
+	<string>1.0</string>
+	<key>Process</key>
+	<array>
+		<dict>
+			<key>Arguments</key>
+			<dict/>
+			<key>Processor</key>
+			<string>com.github.iancohn.SharedProcessors/DellSoftwareUrlProvider</string>
+		</dict>
+		<dict>
+			<key>Processor</key>
+			<string>URLDownloader</string>
+			<key>Arguments</key>
+			<dict>
+				<key>request_headers</key>
+				<dict>
+					<key>User-Agent</key>
+					<string>Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/104.0.5112.102 Safari/537.36</string>
+				</dict>
+			</dict>
+		</dict>
+		<dict>
+			<key>Processor</key>
+			<string>Unarchiver</string>
+			<key>Arguments</key>
+			<dict>
+				<key>archive_format</key>
+				<string>zip</string>
+				<key>purge_destination</key>
+				<true/>
+				<key>destination_path</key>
+				<string>%RECIPE_CACHE_DIR%/PSProvider</string>
+			</dict>
+		</dict>
+		<dict>
+			<key>Processor</key>
+			<string>com.github.iancohn.SharedProcessors/VirusTotalAnalyzerV3</string>
+			<key>Arguments</key>
+			<dict>
+				<key>file_path</key>
+				<string>%RECIPE_CACHE_DIR%/PSProvider/DellBIOSProvider/DellBIOSProvider.dll</string>
+				<key>code_sign_verification_config</key>
+				<dict>
+					<key>code_signing_checks</key>
+					<dict>
+						<key>expected_authority_names</key>
+						<array>
+							<string>Dell Inc</string>
+							<string>Entrust Extended Validation Code Signing CA - EVCS1</string>
+							<string>Entrust.net</string>
+						</array>
+					</dict>
+				</dict>
+			</dict>
+		</dict>
+		<dict>
+			<key>Processor</key>
+			<string>com.github.iancohn.SharedProcessors/VirusTotalAnalyzerV3</string>
+			<key>Arguments</key>
+			<dict>
+				<key>file_path</key>
+				<string>%RECIPE_CACHE_DIR%/PSProvider/DellBIOSProvider/DSMBLibrary.dll</string>
+				<key>code_sign_verification_config</key>
+				<dict>
+					<key>code_signing_checks</key>
+					<dict>
+						<key>expected_authority_names</key>
+						<array>
+							<string>Dell Inc</string>
+							<string>Entrust Extended Validation Code Signing CA - EVCS1</string>
+							<string>Entrust.net</string>
+						</array>
+					</dict>
+				</dict>
+			</dict>
+		</dict>
+		<dict>
+			<key>Processor</key>
+			<string>com.github.iancohn.SharedProcessors/VirusTotalAnalyzerV3</string>
+			<key>Arguments</key>
+			<dict>
+				<key>file_path</key>
+				<string>%RECIPE_CACHE_DIR%/PSProvider/DellBIOSProvider/BIOSIntf.dll</string>
+				<key>code_sign_verification_config</key>
+				<dict>
+					<key>code_signing_checks</key>
+					<dict>
+						<key>expected_authority_names</key>
+						<array>
+							<string>Dell Inc</string>
+							<string>Entrust Extended Validation Code Signing CA - EVCS1</string>
+							<string>Entrust.net</string>
+						</array>
+					</dict>
+				</dict>
+			</dict>
+		</dict>
+		<dict>
+			<key>Processor</key>
+			<string>com.github.iancohn.SharedProcessors/VirusTotalAnalyzerV3</string>
+			<key>Arguments</key>
+			<dict>
+				<key>file_path</key>
+				<string>%RECIPE_CACHE_DIR%/PSProvider/DellBIOSProviderX86/DellBIOSProviderX86.dll</string>
+				<key>code_sign_verification_config</key>
+				<dict>
+					<key>code_signing_checks</key>
+					<dict>
+						<key>expected_authority_names</key>
+						<array>
+							<string>Dell Inc</string>
+							<string>Entrust Extended Validation Code Signing CA - EVCS1</string>
+							<string>Entrust.net</string>
+						</array>
+					</dict>
+				</dict>
+			</dict>
+		</dict>
+		<dict>
+			<key>Processor</key>
+			<string>com.github.iancohn.SharedProcessors/VirusTotalAnalyzerV3</string>
+			<key>Arguments</key>
+			<dict>
+				<key>file_path</key>
+				<string>%RECIPE_CACHE_DIR%/PSProvider/DellBIOSProviderX86/DSMBLibraryX86.dll</string>
+				<key>code_sign_verification_config</key>
+				<dict>
+					<key>code_signing_checks</key>
+					<dict>
+						<key>expected_authority_names</key>
+						<array>
+							<string>Dell Inc</string>
+							<string>Entrust Extended Validation Code Signing CA - EVCS1</string>
+							<string>Entrust.net</string>
+						</array>
+					</dict>
+				</dict>
+			</dict>
+		</dict>
+		<dict>
+			<key>Processor</key>
+			<string>com.github.iancohn.SharedProcessors/VirusTotalAnalyzerV3</string>
+			<key>Arguments</key>
+			<dict>
+				<key>file_path</key>
+				<string>%RECIPE_CACHE_DIR%/PSProvider/DellBIOSProviderX86/BIOSIntf.dll</string>
+				<key>code_sign_verification_config</key>
+				<dict>
+					<key>code_signing_checks</key>
+					<dict>
+						<key>expected_authority_names</key>
+						<array>
+							<string>Dell Inc</string>
+							<string>Entrust Extended Validation Code Signing CA - EVCS1</string>
+							<string>Entrust.net</string>
+						</array>
+					</dict>
+				</dict>
+			</dict>
+		</dict>		
+		<dict>
+			<key>Processor</key>
+			<string>EndOfCheckPhase</string>
+		</dict>
+	</array>
+</dict>
+</plist>
