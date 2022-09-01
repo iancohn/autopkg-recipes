@@ -3,9 +3,9 @@
 <plist version="1.0">
 <dict>
 	<key>Description</key>
-	<string>This recipe downloads the latest version of Dell Command Update and retrieves various useful details.</string>
+	<string>This recipe downloads the latest version of PowerShell Provider for Dell Command.</string>
 	<key>Identifier</key>
-	<string>com.github.iancohn.download.DellCommandUpdate-Win64</string>
+	<string>com.github.iancohn.download.DellCommandPSProvider-Win64</string>
 	<key>Input</key>
 	<dict>
 		<key>OS_CODE</key>
@@ -13,9 +13,9 @@
 		<key>CATEGORY</key>
 		<string>SM</string>
 		<key>FILE_TYPE</key>
-		<string>LWXP</string>
+		<string>SEZ</string>
 		<key>DRIVER_NAME_RE_PATTERN</key>
-		<string>Dell\ Command\ \|\ Update\ Application</string>
+		<string>Dell\ Command\ \|\ Power[sS]hell\ Provider</string>
 		<key>POPULATE_CVES</key>
 		<true/>
 	</dict>
