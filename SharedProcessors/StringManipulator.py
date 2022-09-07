@@ -15,32 +15,89 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+from array import array
+from dataclasses import replace
 from distutils.filelist import findall
-from autopkglib import Processor, ProcessorError, UrlGetter
+from autopkglib import ProcessorError, UrlGetter
 import re,json
 
 ACTION_TYPE_OPTIONS = [
 	"replace",
-	"split",
+	"split", # Returns an array to the output variable
 	"loop",
 	"concatenate",
-	"match",
-	"retrieve_url",
-	"format"
+	"match"
 ]
 
-MASTER_SCHEMA = {
-	""
+"""
+SCHEMA = {
+	"$schema": "https://json-schema.org/draft/2020-12/schema",
+	"$id": "https://example.com/tree",
+	"$dynamicAnchor": "node",
+	"type": "array",
+	"prefixItems": [
+		{"$ref": "#/$defs/action"}
+	],
+	"properties":{
+		
+	},
+	"$defs": {
+		"action": {
+			"type": "object",
+			"properties": {
+				"action_type": {
+					"$ref": "#/action_type"
+				},
+				"action_input_var": {
+					"type": "string"
+				},
+				"action_output_var": {
+					"type": "string"
+				},
+				"options": {
+					"oneOf":[
+						{
+							"$ref": "#/replace_options"
+						},
+						{
+							"$ref": "#/split_options"
+						}
+					]
+				}
+			},
+			"required":[
+				"action_type",
+				"options"
+			],
+			"additionalProperties": False
+		},
+		"replace_options": 1,
+		"action_type": {
+			"enum": [
+				"replace",
+				"split",
+				"loop",
+				"concatenate",
+				"match",
+				"retrieve_url",
+				"format"
+			],
+			"type": "string"
+		},
+		"options": {
+			"type": "object"
+		}
+	}
 }
 
 
-OBJECT_SCHEMAS = {
+OBJECT_SCHEMA_DESCRIPTIONS = {
 	"action": {
 		"action_type": "replace",#enum
 		"action_input_var": "var",#string
 		"action_output_var": "var",#string
-		"arguments": {
-			#arguments object schema depends on action_type enum value
+		"options": {
+			#options object schema depends on action_type enum value
 		}
 	},
 	"replace_arguments": {
@@ -59,19 +116,23 @@ OBJECT_SCHEMAS = {
 	}
 
 }
-
-
+"""
 
 REPLACE_ACTION_SAMPLE = {
 	"action_input_var": "input",
 	"action_type": "replace",
 	"action_output_var": "output",
-	"arguments": {
+	"options": {
 		"replacements": [
 			{
 				"find_text": "a string to find",
 				"replace_text": "replace it with this.",
-				"replace_all": True
+				"replace_n": -1
+			},
+			{
+				"find_text": "another string to find",
+				"replace_text": "replace it with something else.",
+				"replace_n": 1
 			}
 		]
 	}
@@ -81,7 +142,7 @@ SPLIT_ACTION_SAMPLE = {
 	"action_type": "split",
 	"action_output_var": "output",
 	"arguments": {
-		"split_on_text": ","
+		"split_on_text": ",",
 	}
 }
 LOOP_ACTION_SAMPLE = {
@@ -119,22 +180,49 @@ class StringManipulator(UrlGetter):
 	input_variables = {
 		"manipulation_actions": {
 			"required": True,
-			"default": [],
 			"description": (
-				"An array of dictionaries representing the actions to take on a string"
+				"An array of dictionaries representing the actions to take."
 			)
 		}
 }
 	output_variables = {
-        'file_size': {"description": "The size of the file."}
+        
     }
 
 	__doc__ = description
 
+
+	def replace_text(self,input_variable_name:str = 'output',output_variable_name:str = 'output', options:dict = {"replacements":[]}) -> str:
+		myString = self.env.get(input_variable_name, 'output')
+		replacements = options["replacements"]
+		if len(replacements) == 0:
+			raise(ProcessorError('No replacements indicated.'))
+		
+		for replacement in replacements:
+			nStrings = replacement["replace_n"] or -1
+			searchString = replacement["find_text"]
+			replaceString = replacement["replace_text"]
+			myString = myString.replace(searchString,replaceString,nStrings)
+			del nStrings,searchString,replaceString
+		
+		self.env[output_variable_name] = myString
+
 	def main(self):
-		print('something')
+		actionFunctions = {
+			"replace": self.replace_text
+		}
+		
+		manipulationActions:array = self.env.get("manipulation_actions")
+		if len(manipulationActions) == 0:
+			raise(ProcessorError('No actions configured'))
+		
+		for manipulationAction in manipulationActions:
+			self.output("Performing ({}) on string.".format(manipulationAction["action_type"]), verbose_level=3)
+			inputVarName = self.env.get(manipulationAction["input_variable_name"], "output")
+			outputVarName = self.env.get(manipulationAction["output_variable_name"], "output")
+			self.env[outputVarName] = actionFunctions[manipulationAction["action_type"]](inputVarName,outputVarName,manipulationAction["options"])
 
-
+		
 if __name__ == "__main__":
 	PROCESSOR = StringManipulator()
 	PROCESSOR.execute_shell()
