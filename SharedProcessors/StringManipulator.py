@@ -239,7 +239,6 @@ class StringManipulator(URLTextSearcher):
 		joinText = options["concatenate_with_text"]
 		self.env[output_variable_name] = joinText.join(myArray)
 
-
 	def main(self):
 		actionFunctions = {
 			"replace": self.replace_text,
