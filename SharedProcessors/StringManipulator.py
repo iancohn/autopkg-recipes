@@ -15,18 +15,14 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from array import array
-from dataclasses import replace
-from distutils.filelist import findall
 from inspect import _void
-from tabnanny import verbose
 from autopkglib import ProcessorError,Processor,URLTextSearcher
-import re,json
+import re
 
 ACTION_TYPE_OPTIONS = [
 	"replace",
 	"split", # Returns an array to the output variable
-	"loop",
+	#"loop",
 	"concatenate",
 	"match"
 ]
@@ -174,8 +170,6 @@ CONCATENATE_ACTION_SAMPLE = {
 	}
 }
 
-
-#> sudo /Library/AutoPkg/Python3/Python.framework/Versions/Current/bin/python3 -m pip install --target=/Library/AutoPkg/Python3/Python.framework/Versions/Current/lib/python3.7/site-packages/ --ignore-installed signify
 __all__ = ["StringManipulator"]
 
 class StringManipulator(URLTextSearcher):
