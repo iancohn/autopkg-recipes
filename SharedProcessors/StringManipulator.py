@@ -18,7 +18,9 @@
 from array import array
 from dataclasses import replace
 from distutils.filelist import findall
-from autopkglib import ProcessorError, UrlGetter
+from inspect import _void
+from tabnanny import verbose
+from autopkglib import ProcessorError,Processor
 import re,json
 
 ACTION_TYPE_OPTIONS = [
@@ -119,9 +121,9 @@ OBJECT_SCHEMA_DESCRIPTIONS = {
 """
 
 REPLACE_ACTION_SAMPLE = {
-	"action_input_var": "input",
+	"input_variable_name": "output",
 	"action_type": "replace",
-	"action_output_var": "output",
+	"output_variable_name": "output",
 	"options": {
 		"replacements": [
 			{
@@ -175,7 +177,7 @@ MATCH_ACTION_SAMPLE = {
 #> sudo /Library/AutoPkg/Python3/Python.framework/Versions/Current/bin/python3 -m pip install --target=/Library/AutoPkg/Python3/Python.framework/Versions/Current/lib/python3.7/site-packages/ --ignore-installed signify
 __all__ = ["StringManipulator"]
 
-class StringManipulator(UrlGetter):
+class StringManipulator(Processor):
 	description = "Parse, manipulate, and return a string"
 	input_variables = {
 		"manipulation_actions": {
@@ -192,20 +194,28 @@ class StringManipulator(UrlGetter):
 	__doc__ = description
 
 
-	def replace_text(self,input_variable_name:str = 'output',output_variable_name:str = 'output', options:dict = {"replacements":[]}) -> str:
-		myString = self.env.get(input_variable_name, 'output')
+	def replace_text(self,input_variable_name:str = 'output',output_variable_name:str = 'output', options:dict = {"replacements":[]})->_void:
+		self.output("Getting input variable with name: {}".format(input_variable_name), verbose_level=3)
+		myString = self.env.get(input_variable_name)
 		replacements = options["replacements"]
 		if len(replacements) == 0:
 			raise(ProcessorError('No replacements indicated.'))
+		else:
+			self.output("{} replacements indicated".format(len(replacements)), verbose_level=3)
 		
 		for replacement in replacements:
+			self.output(replacement,verbose_level=3)
 			nStrings = replacement["replace_n"] or -1
 			searchString = replacement["find_text"]
 			replaceString = replacement["replace_text"]
+			self.output("FINDING: {}\tREPLACE WITH: {}".format(searchString,replaceString))
+			self.output("IN String: {}".format(myString),verbose_level=3)
 			myString = myString.replace(searchString,replaceString,nStrings)
+			self.output("OUT String: {}".format(myString),verbose_level=3)
 			del nStrings,searchString,replaceString
 		
 		self.env[output_variable_name] = myString
+
 
 	def main(self):
 		actionFunctions = {
@@ -216,11 +226,18 @@ class StringManipulator(UrlGetter):
 		if len(manipulationActions) == 0:
 			raise(ProcessorError('No actions configured'))
 		
+		outputVars = {}
+
 		for manipulationAction in manipulationActions:
 			self.output("Performing ({}) on string.".format(manipulationAction["action_type"]), verbose_level=3)
-			inputVarName = self.env.get(manipulationAction["input_variable_name"], "output")
-			outputVarName = self.env.get(manipulationAction["output_variable_name"], "output")
-			self.env[outputVarName] = actionFunctions[manipulationAction["action_type"]](inputVarName,outputVarName,manipulationAction["options"])
+			inputVarName = manipulationAction["input_variable_name"] or "output"
+			self.output("Input Variable: {}".format(inputVarName),verbose_level=3)
+			outputVarName = manipulationAction["output_variable_name"] or "output"
+			self.output("Output Variable: {}".format(outputVarName),verbose_level=3)
+			actionFunctions[manipulationAction["action_type"]](inputVarName,outputVarName,manipulationAction["options"])
+			self.output("{}: {}".format(outputVarName,self.env[outputVarName]))
+		
+		self.output("Completed string manipulations. output variables:\r\n{}".format(outputVars))
 
 		
 if __name__ == "__main__":
