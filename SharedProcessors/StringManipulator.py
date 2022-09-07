@@ -20,7 +20,7 @@ from dataclasses import replace
 from distutils.filelist import findall
 from inspect import _void
 from tabnanny import verbose
-from autopkglib import ProcessorError,Processor
+from autopkglib import ProcessorError,Processor,URLTextSearcher
 import re,json
 
 ACTION_TYPE_OPTIONS = [
@@ -139,6 +139,16 @@ REPLACE_ACTION_SAMPLE = {
 		]
 	}
 }
+MATCH_ACTION_SAMPLE = {
+	"action_input_var": "input/item",
+	"action_type": "match",
+	"action_output_var": "output",
+	"arguments": {
+		"re_pattern": "",
+		"re_flags": [],
+		"find_all": True
+	}
+}
 SPLIT_ACTION_SAMPLE = {
 	"action_input_var": "input",
 	"action_type": "split",
@@ -156,28 +166,19 @@ LOOP_ACTION_SAMPLE = {
 	}
 }
 CONCATENATE_ACTION_SAMPLE = {
-	"action_input_var": "input",
+	"action_input_var_var": "",
 	"action_type": "concatenate",
 	"action_output_var": "output",
 	"arguments": {
 		"concatenate_with_text": ""
 	}
 }
-MATCH_ACTION_SAMPLE = {
-	"action_input_var": "input/item",
-	"action_type": "match",
-	"action_output_var": "output",
-	"arguments": {
-		"re_pattern": "",
-		"re_flags": [],
-		"find_all": True
-	}
-}
+
 
 #> sudo /Library/AutoPkg/Python3/Python.framework/Versions/Current/bin/python3 -m pip install --target=/Library/AutoPkg/Python3/Python.framework/Versions/Current/lib/python3.7/site-packages/ --ignore-installed signify
 __all__ = ["StringManipulator"]
 
-class StringManipulator(Processor):
+class StringManipulator(URLTextSearcher):
 	description = "Parse, manipulate, and return a string"
 	input_variables = {
 		"manipulation_actions": {
@@ -216,10 +217,35 @@ class StringManipulator(Processor):
 		
 		self.env[output_variable_name] = myString
 
+	def match_string(self,input_variable_name:str = 'output',output_variable_name:str = 'output', options:dict = {"re_pattern": None,"re_flags": [], "find_all": True}) ->_void:
+		description = "Perform RegEx matching on the string. Sets the output_variable_name to an array of matches"
+		options = options
+		self.env["re_flags"] = options["re_flags"] or []
+		myString = self.env.get(input_variable_name)
+		flags = self.prepare_re_flags()
+
+		rePattern = re.compile(options["re_pattern"], flags=flags)
+		if options["find_all"] == True:
+			self.env[output_variable_name] = rePattern.findall(myString)
+		else:
+			self.env[output_variable_name] = rePattern.search(myString)
+
+	def split_string(self,input_variable_name:str = 'output',output_variable_name:str = 'output', options:dict = {"split_on_text": None}) ->_void:
+		split = options["split_on_text"] or ","
+		self.env[output_variable_name] = self.env[input_variable_name].split(split)
+
+	def concatenate_strings(self,input_variable_name:str = 'output',output_variable_name:str = 'output', options:dict = {"concatenate_with_text": ""}) ->_void:
+		myArray = self.env[input_variable_name] or []
+		joinText = options["concatenate_with_text"]
+		self.env[output_variable_name] = joinText.join(myArray)
+
 
 	def main(self):
 		actionFunctions = {
-			"replace": self.replace_text
+			"replace": self.replace_text,
+			"match": self.match_string,
+			"concatenate": self.concatenate_strings,
+			"split": self.split_string
 		}
 		
 		manipulationActions:array = self.env.get("manipulation_actions")
@@ -229,10 +255,20 @@ class StringManipulator(Processor):
 		outputVars = {}
 
 		for manipulationAction in manipulationActions:
+			if "output_variable_name" in manipulationAction:
+				outputVarName = manipulationAction["output_variable_name"]
+			else:
+				outputVarName = "output"
+			
+			if "input_variable_name" in manipulationAction:
+				inputVarName = manipulationAction["input_variable_name"]
+			else:
+				inputVarName = "output"
+			
 			self.output("Performing ({}) on string.".format(manipulationAction["action_type"]), verbose_level=3)
-			inputVarName = manipulationAction["input_variable_name"] or "output"
+			
 			self.output("Input Variable: {}".format(inputVarName),verbose_level=3)
-			outputVarName = manipulationAction["output_variable_name"] or "output"
+			
 			self.output("Output Variable: {}".format(outputVarName),verbose_level=3)
 			actionFunctions[manipulationAction["action_type"]](inputVarName,outputVarName,manipulationAction["options"])
 			self.output("{}: {}".format(outputVarName,self.env[outputVarName]))
