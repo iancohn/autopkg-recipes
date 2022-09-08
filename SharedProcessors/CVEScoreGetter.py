@@ -32,10 +32,11 @@ class CVEScoreGetter(URLTextSearcher):
 
 	input_variables = {
 		"cves": {
-			"required": True,
+			"required": False,
 			"description": (
 				"A list of CVEs (delimit with commas) to search nvd.nist.gov for."
-			)
+			),
+			"default": ""
 		},
 		"cvss_version": {
 			"required": False,
@@ -89,12 +90,17 @@ class CVEScoreGetter(URLTextSearcher):
 			self.output("Found {} CVE Scores.".format(len(scores)),verbose_level=3)
 
 			scores.sort(key = lambda x: x["risk_score"], reverse=True)
-			topCveScore = scores[0]
+			
+			if len(scores) > 0:
+				topCveScore = scores[0]
+				self.env["maximum_cve_score"] = topCveScore["risk_score"]
+				self.env["maximum_cve_rating"] = topCveScore["risk_rating"]
+			else:
+				self.output("No CVE Scores returned.")
+				self.env["maximum_cve_score"] = ""
+				self.env["maximum_cve_rating"] = ""
 
-			self.env["maximum_cve_score"] = topCveScore["risk_score"]
-			self.env["maximum_cve_rating"] = topCveScore["risk_rating"]
-
-			self.output("Maximum CVSS Score: {}\tRating: {}".format(topCveScore["risk_score"], topCveScore["risk_rating"]),verbose_level=1)
+			self.output("Maximum CVSS Score: {}\tRating: {}".format(self.env["maximum_cve_score"], self.env["maximum_cve_rating"]),verbose_level=1)
 
 		except Exception as e:
 			raise ProcessorError(e)
