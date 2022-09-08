@@ -57,22 +57,29 @@ class CVEScoreGetter(URLTextSearcher):
 		return trimmed
 
 	def get_cve_score(self,cve:str) ->dict:
-		score = {}
-		cvssVersion = self.env.get("cvss_version", self.env["input_variables"]["cvss_version"]["default"])
+		scoreDict = {}
+		cvssVersion = self.env.get("cvss_version", self.input_variables["cvss_version"]["default"])
 		url = NVD_SEARCH_URL_BASE + cve
 
-		html = self.download(url, Text=True)
+		self.output("Getting {} score for {}.".format(cvssVersion,cve), verbose_level=3)
+		html = self.download(url, text=True)
 		pattern = "\\\"severityDetail\\\"[\s\S]*?{}\-calculator[\s\S]*?((?P<risk_score>[\d\.]*)\s+(?P<risk_rating>\w*))\<\/a\>".format(cvssVersion)
-		rePattern = re.compile('', re.I)
+		rePattern = re.compile(pattern, re.I)
 		myMatch = rePattern.search(html)
-		score = myMatch.groupdict()
+		groupDict = myMatch.groupdict()
+		score = groupDict["risk_score"]
+		rating = groupDict["risk_rating"].capitalize()
 
-		return score
+		self.output("Score: {}\tRating: {}".format(score, rating),verbose_level=3)
+		scoreDict["risk_score"] = score
+		scoreDict["risk_rating"] = rating
+
+		return scoreDict
 
 	def main(self):
-				
+		
 		cveString = self.env.get("cves")
-		cves = self.split_cves(cves)
+		cves = self.split_cves(cveString)
 
 		scores = []
 		try:
@@ -80,13 +87,15 @@ class CVEScoreGetter(URLTextSearcher):
 				score = self.get_cve_score(cve)
 				scores.append(score)
 
-			scores.sort(key="risk_score", reverse=True)
+			self.output("Found {} CVE Scores.".format(len(scores)),verbose_level=3)
+
+			scores.sort(key = lambda x: x["risk_score"], reverse=True)
 			topCveScore = scores[0]
 
 			self.env["maximum_cve_score"] = topCveScore["risk_score"]
 			self.env["maximum_cve_rating"] = topCveScore["risk_rating"]
 
-			self.output("{}: {}".format(outputVarName,self.env[outputVarName]),verbose_level=3)
+			self.output("Maximum CVSS Score: {}\tRating: {}".format(topCveScore["risk_score"], topCveScore["risk_rating"]),verbose_level=1)
 
 		except Exception as e:
 			raise ProcessorError(e)
