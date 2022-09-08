@@ -24,6 +24,7 @@ __all__ = ["CVEScoreGetter"]
 NVD_SEARCH_URL_BASE = "https://nvd.nist.gov/vuln/detail/"
 CVSS_VERSION_OPTS = ["v3,v2"]
 CVSS_VERSION_DEFAULT = "v3"
+CVE_NULL_RATING_DEFAULT = None
 
 class CVEScoreGetter(URLTextSearcher):
 	"""
@@ -45,6 +46,11 @@ class CVEScoreGetter(URLTextSearcher):
 			"required": False,
 			"description": "CVSS version to use in risk calculation. Options: {}".format(CVSS_VERSION_OPTS),
 			"default": CVSS_VERSION_DEFAULT
+		},
+		"null_cve_rating": {
+			"required": False,
+			"description": "If no CVEs are evaluated, return this string as the 'maximum_cve_rating'",
+			"default": CVE_NULL_RATING_DEFAULT
 		}
 	}
 	output_variables = {
@@ -102,7 +108,7 @@ class CVEScoreGetter(URLTextSearcher):
 			else:
 				self.output("No CVE Scores returned.")
 				self.env["maximum_cve_score"] = ""
-				self.env["maximum_cve_rating"] = ""
+				self.env["maximum_cve_rating"] = self.input_variables["null_cve_rating"]["default"] or ""
 
 			self.output("Maximum CVSS Score: {}\tRating: {}".format(self.env["maximum_cve_score"], self.env["maximum_cve_rating"]),verbose_level=1)
 
