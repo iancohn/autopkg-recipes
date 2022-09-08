@@ -1,0 +1,38 @@
+Description: Test the StringManipulatorProcessor
+Identifier: com.github.iancohn.test.StringManipulator
+MinimumVersion: "2.3"
+
+Input:
+  START_STRING: "some string that you wish to replace some text in. It will be replaced"
+
+Process:
+  - 
+    Processor: com.github.iancohn.SharedProcessors/StringManipulator
+    Arguments:
+      manipulation_actions:
+        -
+          input_variable_name: START_STRING
+          action_type: replace
+          #output_variable_name: myOutput
+          options: 
+            replacements:
+            -
+              find_text: "some"
+              replace_text: "a"
+              replace_n: -1
+            -
+              find_text: "replace"
+              replace_text: "change"
+              replace_n: 1
+        -
+          #input_variable_name: myOutput
+          action_type: split
+          #output_variable_name: splitString
+          options:
+            split_on_text: " "
+        -
+          #input_variable_name: splitString
+          action_type: concatenate
+          #output_variable_name: concatenatedOutput
+          options:
+            concatenate_with_text: ","

@@ -1,0 +1,35 @@
+Description: Test the CVE Searcher on a Dell BIOS with known CVEs
+Identifier: com.github.iancohn.test.DellBiosCVESearcher
+MinimumVersion: "2.3"
+
+Input:
+  URL: https://www.dell.com/support/home/en-us/drivers/driversdetails?driverid=g0hx9
+
+Process:
+  -
+    Processor: URLTextSearcher
+    Arguments:
+      url: "%URL%"
+      re_pattern: '[\s\S]*'
+  - 
+    Processor: com.github.iancohn.SharedProcessors/StringManipulator
+    Arguments:
+      manipulation_actions:
+        -
+          input_variable_name: match
+          action_type: simple_match
+          output_variable_name: match
+          options: 
+            re_pattern: 'cve\-\d{4}\-\d*'
+            re_flags: IGNORECASE
+            find_all: True
+        -
+          input_variable_name: match
+          action_type: concatenate
+          #output_variable_name: concatenatedOutput
+          options:
+            concatenate_with_text: ","
+  - 
+    Processor: com.github.iancohn.SharedProcessors/CVEScoreGetter
+    Arguments:
+      cves: "%output%"
