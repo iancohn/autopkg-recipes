@@ -56,7 +56,6 @@ class CVEScoreGetter(URLTextSearcher):
 		return trimmed
 
 	def get_cve_score(self,cve:str) ->dict:
-<<<<<<< HEAD
 		scoreDict = {}
 		cvssVersion = self.env.get("cvss_version", self.input_variables["cvss_version"]["default"])
 		url = NVD_SEARCH_URL_BASE + cve
@@ -80,24 +79,6 @@ class CVEScoreGetter(URLTextSearcher):
 		
 		cveString = self.env.get("cves")
 		cves = self.split_cves(cveString)
-=======
-		score = {}
-		cvssVersion = self.env.get("cvss_version", self.env["input_variables"]["cvss_version"]["default"])
-		url = NVD_SEARCH_URL_BASE + cve
-
-		html = self.download(url, Text=True)
-		pattern = "\\\"severityDetail\\\"[\s\S]*?{}\-calculator[\s\S]*?((?P<risk_score>[\d\.]*)\s+(?P<risk_rating>\w*))\<\/a\>".format(cvssVersion)
-		rePattern = re.compile('', re.I)
-		myMatch = rePattern.search(html)
-		score = myMatch.groupdict()
-
-		return score
-
-	def main(self):
-				
-		cveString = self.env.get("cves")
-		cves = self.split_cves(cves)
->>>>>>> 3494c2e (Initial publish)
 
 		scores = []
 		try:
@@ -105,23 +86,15 @@ class CVEScoreGetter(URLTextSearcher):
 				score = self.get_cve_score(cve)
 				scores.append(score)
 
-<<<<<<< HEAD
 			self.output("Found {} CVE Scores.".format(len(scores)),verbose_level=3)
 
 			scores.sort(key = lambda x: x["risk_score"], reverse=True)
-=======
-			scores.sort(key="risk_score", reverse=True)
->>>>>>> 3494c2e (Initial publish)
 			topCveScore = scores[0]
 
 			self.env["maximum_cve_score"] = topCveScore["risk_score"]
 			self.env["maximum_cve_rating"] = topCveScore["risk_rating"]
 
-<<<<<<< HEAD
 			self.output("Maximum CVSS Score: {}\tRating: {}".format(topCveScore["risk_score"], topCveScore["risk_rating"]),verbose_level=1)
-=======
-			self.output("{}: {}".format(outputVarName,self.env[outputVarName]),verbose_level=3)
->>>>>>> 3494c2e (Initial publish)
 
 		except Exception as e:
 			raise ProcessorError(e)
