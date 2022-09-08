@@ -26,7 +26,10 @@ CVSS_VERSION_OPTS = ["v3,v2"]
 CVSS_VERSION_DEFAULT = "v3"
 
 class CVEScoreGetter(URLTextSearcher):
-	"""Search the National Vulnerability Database for provided CVEs, return the maximum score and corresponding rating category."""
+	"""
+	Search the National Vulnerability Database for provided CVEs, return the maximum score and corresponding rating category.
+	Returns blank strings for output variables if There are no CVEs to check.
+	"""
 
 	description = __doc__
 
