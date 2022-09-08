@@ -87,8 +87,9 @@ class CVEScoreGetter(URLTextSearcher):
 		scores = []
 		try:
 			for cve in cves:
-				score = self.get_cve_score(cve)
-				scores.append(score)
+				if cve != "":
+					score = self.get_cve_score(cve)
+					scores.append(score)
 
 			self.output("Found {} CVE Scores.".format(len(scores)),verbose_level=3)
 
