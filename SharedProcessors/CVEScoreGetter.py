@@ -108,7 +108,7 @@ class CVEScoreGetter(URLTextSearcher):
 			else:
 				self.output("No CVE Scores returned.")
 				self.env["maximum_cve_score"] = ""
-				self.env["maximum_cve_rating"] = self.env.get("null_cve_rating", self.input_variables["null_cve_rating"]["default"], "")
+				self.env["maximum_cve_rating"] = self.env.get("null_cve_rating", self.input_variables["null_cve_rating"]["default"]) or ""
 
 			self.output("Maximum CVSS Score: {}\tRating: {}".format(self.env["maximum_cve_score"], self.env["maximum_cve_rating"]),verbose_level=1)
 
