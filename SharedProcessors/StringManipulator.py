@@ -173,7 +173,10 @@ CONCATENATE_ACTION_SAMPLE = {
 __all__ = ["StringManipulator"]
 
 class StringManipulator(URLTextSearcher):
-	description = "Parse, manipulate, and return a string"
+	"""Parse, manipulate, and return a string."""
+
+	description = __doc__
+
 	input_variables = {
 		"manipulation_actions": {
 			"required": True,
@@ -185,10 +188,7 @@ class StringManipulator(URLTextSearcher):
 	output_variables = {
         
     }
-
-	__doc__ = description
-
-
+	
 	def replace_text(self,input_variable_name:str = 'output',output_variable_name:str = 'output', options:dict = {"replacements":[]})->_void:
 		self.output("Getting input variable with name: {}".format(input_variable_name), verbose_level=3)
 		myString = self.env.get(input_variable_name)
@@ -199,11 +199,10 @@ class StringManipulator(URLTextSearcher):
 			self.output("{} replacements indicated".format(len(replacements)), verbose_level=3)
 		
 		for replacement in replacements:
-			self.output(replacement,verbose_level=3)
 			nStrings = replacement["replace_n"] or -1
 			searchString = replacement["find_text"]
 			replaceString = replacement["replace_text"]
-			self.output("FINDING: {}\tREPLACE WITH: {}".format(searchString,replaceString))
+			self.output("FINDING: {}\tREPLACE WITH: {}".format(searchString,replaceString), verbose_level=3)
 			self.output("IN String: {}".format(myString),verbose_level=3)
 			myString = myString.replace(searchString,replaceString,nStrings)
 			self.output("OUT String: {}".format(myString),verbose_level=3)
@@ -212,61 +211,80 @@ class StringManipulator(URLTextSearcher):
 		self.env[output_variable_name] = myString
 
 	def match_string(self,input_variable_name:str = 'output',output_variable_name:str = 'output', options:dict = {"re_pattern": None,"re_flags": [], "find_all": True}) ->_void:
-		description = "Perform RegEx matching on the string. Sets the output_variable_name to an array of matches"
-		options = options
-		self.env["re_flags"] = options["re_flags"] or []
+		"""Perform a simple RegEx match (no capture groups) on the string. Sets the output_variable_name to an array of matches"""
+
+		self.output("Getting input variable with name: {}".format(input_variable_name), verbose_level=3)
 		myString = self.env.get(input_variable_name)
+
+		self.output("Preparing RegEx Flags",verbose_level=3)
+		self.env["re_flags"] = options["re_flags"] or []
 		flags = self.prepare_re_flags()
 
+		self.output("Creating RegEx matching object.",verbose_level=3)
 		rePattern = re.compile(options["re_pattern"], flags=flags)
+
+		self.output("Finding match.",verbose_level=3)
 		if options["find_all"] == True:
 			self.env[output_variable_name] = rePattern.findall(myString)
 		else:
-			self.env[output_variable_name] = rePattern.search(myString)
+			self.env[output_variable_name] = rePattern.search(myString).group()
+
+		if rePattern.search(myString):
+			self.output("Found match.",verbose_level=3)
+		else:
+			self.output("No matches found.",verbose_level=3)
+
+		
 
 	def split_string(self,input_variable_name:str = 'output',output_variable_name:str = 'output', options:dict = {"split_on_text": None}) ->_void:
 		split = options["split_on_text"] or ","
+		self.output("Splitting text on sequence: '{}'".format(split),verbose_level=3)
 		self.env[output_variable_name] = self.env[input_variable_name].split(split)
+		
+		self.output("{} strings returned.".format(len(self.env[output_variable_name])),verbose_level=3)
 
 	def concatenate_strings(self,input_variable_name:str = 'output',output_variable_name:str = 'output', options:dict = {"concatenate_with_text": ""}) ->_void:
 		myArray = self.env[input_variable_name] or []
+		self.output("Joining {} string(s) using sequence: '{}'".format(len(myArray),options["concatenate_with_text"]),verbose_level=3)
 		joinText = options["concatenate_with_text"]
 		self.env[output_variable_name] = joinText.join(myArray)
 
 	def main(self):
 		actionFunctions = {
 			"replace": self.replace_text,
-			"match": self.match_string,
+			"simple_match": self.simple_match_string,
 			"concatenate": self.concatenate_strings,
 			"split": self.split_string
 		}
 		
-		manipulationActions:array = self.env.get("manipulation_actions")
+		manipulationActions:list = self.env.get("manipulation_actions")
 		if len(manipulationActions) == 0:
 			raise(ProcessorError('No actions configured'))
-		
-		outputVars = {}
 
-		for manipulationAction in manipulationActions:
-			if "output_variable_name" in manipulationAction:
-				outputVarName = manipulationAction["output_variable_name"]
-			else:
-				outputVarName = "output"
-			
-			if "input_variable_name" in manipulationAction:
-				inputVarName = manipulationAction["input_variable_name"]
-			else:
-				inputVarName = "output"
-			
-			self.output("Performing ({}) on string.".format(manipulationAction["action_type"]), verbose_level=3)
-			
-			self.output("Input Variable: {}".format(inputVarName),verbose_level=3)
-			
-			self.output("Output Variable: {}".format(outputVarName),verbose_level=3)
-			actionFunctions[manipulationAction["action_type"]](inputVarName,outputVarName,manipulationAction["options"])
-			self.output("{}: {}".format(outputVarName,self.env[outputVarName]))
+		self.output("Processing {} string manipulations".format(len(manipulationActions)))
+		try:
+			for manipulationAction in manipulationActions:
+				if "output_variable_name" in manipulationAction:
+					outputVarName = manipulationAction["output_variable_name"]
+				else:
+					outputVarName = "output"
+				
+				if "input_variable_name" in manipulationAction:
+					inputVarName = manipulationAction["input_variable_name"]
+				else:
+					inputVarName = "output"
+				
+				self.output("Performing ({}) on string.".format(manipulationAction["action_type"]), verbose_level=3)
+				self.output("Input Variable: {}".format(inputVarName),verbose_level=3)
+				self.output("Output Variable: {}".format(outputVarName),verbose_level=3)
+
+				actionFunctions[manipulationAction["action_type"]](inputVarName,outputVarName,manipulationAction["options"])
+				self.output("{}: {}".format(outputVarName,self.env[outputVarName]),verbose_level=3)
+
+		except Exception as e:
+			raise ProcessorError(e)
 		
-		self.output("Completed string manipulations. output variables:\r\n{}".format(outputVars))
+		self.output("Completed string manipulations.",verbose_level=2)
 
 		
 if __name__ == "__main__":
