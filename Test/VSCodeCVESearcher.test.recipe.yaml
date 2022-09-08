@@ -33,4 +33,4 @@ Process:
     Processor: com.github.iancohn.SharedProcessors/CVEScoreGetter
     Arguments:
       cves: "%output%"
-      null_cve_rating: Optional
+      #null_cve_rating: Null
