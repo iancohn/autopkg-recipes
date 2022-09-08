@@ -210,7 +210,7 @@ class StringManipulator(URLTextSearcher):
 		
 		self.env[output_variable_name] = myString
 
-	def match_string(self,input_variable_name:str = 'output',output_variable_name:str = 'output', options:dict = {"re_pattern": None,"re_flags": [], "find_all": True}) ->_void:
+	def simple_match_string(self,input_variable_name:str = 'output',output_variable_name:str = 'output', options:dict = {"re_pattern": None,"re_flags": [], "find_all": True}) ->_void:
 		"""Perform a simple RegEx match (no capture groups) on the string. Sets the output_variable_name to an array of matches"""
 
 		self.output("Getting input variable with name: {}".format(input_variable_name), verbose_level=3)
@@ -233,8 +233,6 @@ class StringManipulator(URLTextSearcher):
 			self.output("Found match.",verbose_level=3)
 		else:
 			self.output("No matches found.",verbose_level=3)
-
-		
 
 	def split_string(self,input_variable_name:str = 'output',output_variable_name:str = 'output', options:dict = {"split_on_text": None}) ->_void:
 		split = options["split_on_text"] or ","
@@ -261,7 +259,7 @@ class StringManipulator(URLTextSearcher):
 		if len(manipulationActions) == 0:
 			raise(ProcessorError('No actions configured'))
 
-		self.output("Processing {} string manipulations".format(len(manipulationActions)))
+		self.output("Processing {} string manipulations".format(len(manipulationActions)),verbose_level=1)
 		try:
 			for manipulationAction in manipulationActions:
 				if "output_variable_name" in manipulationAction:
