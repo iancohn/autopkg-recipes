@@ -3,7 +3,7 @@ Identifier: com.github.iancohn.test.VSCodeCVESearcher
 MinimumVersion: "2.3"
 
 Input:
-  VSCODE_URL: https://code.visualstudio.com/updates/v1_71
+  VSCODE_URL: https://code.visualstudio.com/updates/v1_91
 
 Process:
   -
@@ -33,3 +33,4 @@ Process:
     Processor: com.github.iancohn.SharedProcessors/CVEScoreGetter
     Arguments:
       cves: "%output%"
+      null_cve_rating: "Optional"
