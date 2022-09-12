@@ -1,0 +1,39 @@
+Description: Test the CVE Searcher on a Dell BIOS with known CVEs
+Identifier: com.github.iancohn.test.MSOfficeCVESearch
+MinimumVersion: "2.3"
+
+Input:
+  URL: https://docs.microsoft.com/en-us/officeupdates/microsoft365-apps-security-updates
+  RELEASE: Current Channel
+  BUILD_VERSION: "15427.20210"
+
+Process:
+  -
+    Processor: URLTextSearcher
+    Arguments:
+      url: "%URL%"
+      #re_pattern: (?P&lt;date_id&gt;(january|february|march|april|may|june|july|august|september|october|november|december)\-\d{2}\-\d{4})\W*(?P&lt;date&gt;(january|february|march|april|may|june|july|august|september|october|november|december)\ \d\d\,\ \d{4})
+      re_pattern: '%RELEASE%.*?\(\s?Build\ %BUILD_VERSION%\s?\)[\s\S]*?\<h2'
+      re_flags: IGNORECASE
+  - 
+    Processor: com.github.iancohn.SharedProcessors/StringManipulator
+    Arguments:
+      manipulation_actions:
+        -
+          input_variable_name: match
+          action_type: simple_match
+          output_variable_name: match
+          options: 
+            re_pattern: 'CVE\-\d{4}\-\d{1,6}'
+            re_flags: IGNORECASE
+            find_all: True
+        -
+          input_variable_name: match
+          action_type: concatenate
+          #output_variable_name: concatenatedOutput
+          options:
+            concatenate_with_text: ","
+  - 
+    Processor: com.github.iancohn.SharedProcessors/CVEScoreGetter
+    Arguments:
+      cves: "%output%"
