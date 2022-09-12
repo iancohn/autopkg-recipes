@@ -57,27 +57,6 @@ class GetFileContent(Processor):
         
     }
 	
-	def replace_text(self,input_variable_name:str = 'output',output_variable_name:str = 'output', options:dict = {"replacements":[]})->_void:
-		self.output("Getting input variable with name: {}".format(input_variable_name), verbose_level=3)
-		myString = self.env.get(input_variable_name)
-		replacements = options["replacements"]
-		if len(replacements) == 0:
-			raise(ProcessorError('No replacements indicated.'))
-		else:
-			self.output("{} replacements indicated".format(len(replacements)), verbose_level=3)
-		
-		for replacement in replacements:
-			nStrings = replacement["replace_n"] or -1
-			searchString = replacement["find_text"]
-			replaceString = replacement["replace_text"]
-			self.output("FINDING: {}\tREPLACE WITH: {}".format(searchString,replaceString), verbose_level=3)
-			self.output("IN String: {}".format(myString),verbose_level=3)
-			myString = myString.replace(searchString,replaceString,nStrings)
-			self.output("OUT String: {}".format(myString),verbose_level=3)
-			del nStrings,searchString,replaceString
-		
-		self.env[output_variable_name] = myString
-
 	def get_lines(self,file_content:str) ->list:
 		return file_content.splitlines()
 	
