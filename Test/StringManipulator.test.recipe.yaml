@@ -3,36 +3,36 @@ Identifier: com.github.iancohn.test.StringManipulator
 MinimumVersion: "2.3"
 
 Input:
-  START_STRING: "some string that you wish to replace some text in. It will be replaced"
+  pathname: /Users/icc/Downloads/S9-JAMF-DEV.json
 
 Process:
+  -
+    Processor: com.github.iancohn.SharedProcessors/GetFileContent
+    Arguments:
+      content_type: lines
+      #output_var_name: output
   - 
     Processor: com.github.iancohn.SharedProcessors/StringManipulator
     Arguments:
       manipulation_actions:
         -
-          input_variable_name: START_STRING
+          #input_variable_name: splitString
+          action_type: concatenate
+          #output_variable_name: concatenatedOutput
+          options:
+            concatenate_with_text: "NEWLINEHERE"
+        -
+          #input_variable_name: START_STRING
           action_type: replace
           #output_variable_name: myOutput
           options: 
             replacements:
             -
-              find_text: "some"
-              replace_text: "a"
+              find_text: "duosecurity"
+              replace_text: "DuOsEcUrItY"
               replace_n: -1
             -
-              find_text: "replace"
-              replace_text: "change"
+              find_text: "1.3.0"
+              replace_text: "99.999.99"
               replace_n: 1
-        -
-          #input_variable_name: myOutput
-          action_type: split
-          #output_variable_name: splitString
-          options:
-            split_on_text: " "
-        -
-          #input_variable_name: splitString
-          action_type: concatenate
-          #output_variable_name: concatenatedOutput
-          options:
-            concatenate_with_text: ","
+
