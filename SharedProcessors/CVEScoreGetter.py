@@ -15,33 +15,44 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from inspect import _void
 from autopkglib import ProcessorError,Processor,URLTextSearcher
+from inspect import _void
+from time import sleep
 import re,json
 
 __all__ = ["CVEScoreGetter"]
 
 NVD_SEARCH_URL_BASE = "https://nvd.nist.gov/vuln/detail/"
-NVD_SEARCH_PATTERN = ''
 CVSS_VERSION_OPTS = ["v3,v2"]
 CVSS_VERSION_DEFAULT = "v3"
+CVE_NULL_RATING_DEFAULT = ""
+PAUSE_INTERVAL = 15
 
 class CVEScoreGetter(URLTextSearcher):
-	"""Search the National Vulnerability Database for provided CVEs, return the maximum score and corresponding rating category."""
+	"""
+	Search the National Vulnerability Database for provided CVEs, return the maximum score and corresponding rating category.
+	Returns blank strings for output variables if There are no CVEs to check.
+	"""
 
 	description = __doc__
 
 	input_variables = {
 		"cves": {
-			"required": True,
+			"required": False,
 			"description": (
 				"A list of CVEs (delimit with commas) to search nvd.nist.gov for."
-			)
+			),
+			"default": ""
 		},
 		"cvss_version": {
 			"required": False,
 			"description": "CVSS version to use in risk calculation. Options: {}".format(CVSS_VERSION_OPTS),
 			"default": CVSS_VERSION_DEFAULT
+		},
+		"null_cve_rating": {
+			"required": False,
+			"description": "If no CVEs are evaluated, return this string as the 'maximum_cve_rating'",
+			"default": CVE_NULL_RATING_DEFAULT
 		}
 	}
 	output_variables = {
@@ -63,6 +74,7 @@ class CVEScoreGetter(URLTextSearcher):
 
 		self.output("Getting {} score for {}.".format(cvssVersion,cve), verbose_level=3)
 		html = self.download(url, text=True)
+
 		pattern = "\\\"severityDetail\\\"[\s\S]*?{}\-calculator[\s\S]*?((?P<risk_score>[\d\.]*)\s+(?P<risk_rating>\w*))\<\/a\>".format(cvssVersion)
 		rePattern = re.compile(pattern, re.I)
 		myMatch = rePattern.search(html)
@@ -80,22 +92,32 @@ class CVEScoreGetter(URLTextSearcher):
 		
 		cveString = self.env.get("cves")
 		cves = self.split_cves(cveString)
+		pauseInterval = PAUSE_INTERVAL
+
 
 		scores = []
 		try:
 			for cve in cves:
-				score = self.get_cve_score(cve)
-				scores.append(score)
+				if cve != "":
+					score = self.get_cve_score(cve)
+					scores.append(score)
+					sleep(pauseInterval)
+					self.output("Pausing {} seconds to avoid rate limiting.", verbose_level=3)
 
 			self.output("Found {} CVE Scores.".format(len(scores)),verbose_level=3)
 
 			scores.sort(key = lambda x: x["risk_score"], reverse=True)
-			topCveScore = scores[0]
+			
+			if len(scores) > 0:
+				topCveScore = scores[0]
+				self.env["maximum_cve_score"] = topCveScore["risk_score"]
+				self.env["maximum_cve_rating"] = topCveScore["risk_rating"]
+			else:
+				self.output("No CVE Scores returned.")
+				self.env["maximum_cve_score"] = ""
+				self.env["maximum_cve_rating"] = self.env.get("null_cve_rating", self.input_variables["null_cve_rating"]["default"])
 
-			self.env["maximum_cve_score"] = topCveScore["risk_score"]
-			self.env["maximum_cve_rating"] = topCveScore["risk_rating"]
-
-			self.output("Maximum CVSS Score: {}\tRating: {}".format(topCveScore["risk_score"], topCveScore["risk_rating"]),verbose_level=1)
+			self.output("Maximum CVSS Score: {}\tRating: {}".format(self.env["maximum_cve_score"], self.env["maximum_cve_rating"]),verbose_level=1)
 
 		except Exception as e:
 			raise ProcessorError(e)
