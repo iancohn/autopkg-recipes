@@ -26,7 +26,7 @@ NVD_SEARCH_URL_BASE = "https://nvd.nist.gov/vuln/detail/"
 CVSS_VERSION_OPTS = ["v3,v2"]
 CVSS_VERSION_DEFAULT = "v3"
 CVE_NULL_RATING_DEFAULT = ""
-PAUSE_INTERVAL = 15
+PAUSE_INTERVAL = 5
 
 class CVEScoreGetter(URLTextSearcher):
 	"""
@@ -78,11 +78,16 @@ class CVEScoreGetter(URLTextSearcher):
 		pattern = "\\\"severityDetail\\\"[\s\S]*?{}\-calculator[\s\S]*?((?P<risk_score>[\d\.]*)\s+(?P<risk_rating>\w*))\<\/a\>".format(cvssVersion)
 		rePattern = re.compile(pattern, re.I)
 		myMatch = rePattern.search(html)
-		groupDict = myMatch.groupdict()
-		score = groupDict["risk_score"]
-		rating = groupDict["risk_rating"].capitalize()
+		if myMatch == None:
+			score = "0.0"
+			rating = "N/A"
+			self.output("CVE Not found within NVD database. Perhaps a NVD record does not exist at this time.",verbose_level=2)
+		else:
+			groupDict = myMatch.groupdict()
+			score = groupDict["risk_score"]
+			rating = groupDict["risk_rating"].capitalize()
 
-		self.output("Score: {}\tRating: {}".format(score, rating),verbose_level=3)
+			self.output("Score: {}\tRating: {}".format(score, rating),verbose_level=3)
 		scoreDict["risk_score"] = score
 		scoreDict["risk_rating"] = rating
 
@@ -102,7 +107,7 @@ class CVEScoreGetter(URLTextSearcher):
 					score = self.get_cve_score(cve)
 					scores.append(score)
 					sleep(pauseInterval)
-					self.output("Pausing {} seconds to avoid rate limiting.", verbose_level=3)
+					self.output("Pausing {} seconds to avoid rate limiting.".format(pauseInterval), verbose_level=3)
 
 			self.output("Found {} CVE Scores.".format(len(scores)),verbose_level=3)
 
