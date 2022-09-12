@@ -15,8 +15,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from inspect import _void
 from autopkglib import ProcessorError,Processor,URLTextSearcher
+from inspect import _void
+from time import sleep
 import re,json
 
 __all__ = ["CVEScoreGetter"]
@@ -25,6 +26,7 @@ NVD_SEARCH_URL_BASE = "https://nvd.nist.gov/vuln/detail/"
 CVSS_VERSION_OPTS = ["v3,v2"]
 CVSS_VERSION_DEFAULT = "v3"
 CVE_NULL_RATING_DEFAULT = ""
+PAUSE_INTERVAL = 15
 
 class CVEScoreGetter(URLTextSearcher):
 	"""
@@ -72,6 +74,7 @@ class CVEScoreGetter(URLTextSearcher):
 
 		self.output("Getting {} score for {}.".format(cvssVersion,cve), verbose_level=3)
 		html = self.download(url, text=True)
+
 		pattern = "\\\"severityDetail\\\"[\s\S]*?{}\-calculator[\s\S]*?((?P<risk_score>[\d\.]*)\s+(?P<risk_rating>\w*))\<\/a\>".format(cvssVersion)
 		rePattern = re.compile(pattern, re.I)
 		myMatch = rePattern.search(html)
@@ -89,6 +92,8 @@ class CVEScoreGetter(URLTextSearcher):
 		
 		cveString = self.env.get("cves")
 		cves = self.split_cves(cveString)
+		pauseInterval = PAUSE_INTERVAL
+
 
 		scores = []
 		try:
@@ -96,6 +101,8 @@ class CVEScoreGetter(URLTextSearcher):
 				if cve != "":
 					score = self.get_cve_score(cve)
 					scores.append(score)
+					sleep(pauseInterval)
+					self.output("Pausing {} seconds to avoid rate limiting.", verbose_level=3)
 
 			self.output("Found {} CVE Scores.".format(len(scores)),verbose_level=3)
 
