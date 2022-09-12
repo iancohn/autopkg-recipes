@@ -96,7 +96,7 @@ class CVEScoreGetter(URLTextSearcher):
 	def main(self):
 		
 		cveString = self.env.get("cves")
-		cves = self.split_cves(cveString)
+		cves = list(set(self.split_cves(cveString)))
 		pauseInterval = PAUSE_INTERVAL
 
 
