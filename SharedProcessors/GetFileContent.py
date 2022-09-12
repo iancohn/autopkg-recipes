@@ -23,7 +23,7 @@ import json
 __all__ = ["GetFileContent"]
 
 CONTENT_TYPE_OPTIONS = [
-	#"json",
+	"json",
 	#"xml",
 	#"binary_plist",
 	"lines",
